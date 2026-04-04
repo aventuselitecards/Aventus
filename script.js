@@ -87,7 +87,7 @@ function displayInventory(cards) {
     }
     
     // Clear and display cards - show up to 20 cards
-    inventoryGrid.innerHTML = cards.slice(0, 20).map(card => `
+    inventoryGrid.innerHTML = cards.slice(0, 50).map(card => `
         <div class="card-item">
             <div class="card-image">
                 ${card.image ? `<img src="${card.image}" alt="${card.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='🃏'">` : '🃏'}
