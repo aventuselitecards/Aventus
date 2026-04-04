@@ -1,0 +1,12 @@
+[build]
+  publish = "."
+  command = ""
+
+[context.production]
+  command = ""
+
+[context.branch-deploy]
+  command = ""
+
+[context.deploy-preview]
+  command = ""
