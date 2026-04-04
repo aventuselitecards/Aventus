@@ -73,20 +73,83 @@ nav {
     justify-content: center;
     text-align: center;
     padding: 0 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "🃏 ⚾ 🏀 🏈 🎯 🏆 🌟";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30rem;
+    opacity: 0.05;
+    white-space: nowrap;
+    animation: float 20s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .hero-content h1 {
-    font-size: 4rem;
-    color: white;
+    font-size: 3.5rem;
+    color: var(--gold);
     margin-bottom: 1rem;
     text-transform: uppercase;
     letter-spacing: 4px;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+    to { text-shadow: 0 0 30px rgba(212, 175, 55, 0.9), 0 0 50px rgba(212, 175, 55, 0.3); }
 }
 
 .hero-content p {
     font-size: 1.5rem;
     color: #ccc;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+}
+
+.hero-tagline {
+    font-size: 1.3rem !important;
+    color: #fff !important;
+    margin-bottom: 1.5rem !important;
+    letter-spacing: 2px;
+}
+
+.hero-note {
+    font-size: 1rem !important;
+    color: #888 !important;
+    margin-top: 2rem !important;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 1rem 3rem;
+    background: linear-gradient(135deg, var(--gold) 0%, #b8962e 100%);
+    color: var(--primary) !important;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.3rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.cta-button:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.6) !important;
 }
 
 .cta-button {
@@ -138,11 +201,21 @@ nav {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    transition: transform 0.3s;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .card-item:hover {
-    transform: translateY(-5px);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.card-item:hover .card-image img {
+    transform: scale(1.1);
+}
+
+.card-image img {
+    transition: transform 0.3s ease;
 }
 
 .card-image {
