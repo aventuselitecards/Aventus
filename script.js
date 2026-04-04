@@ -26,90 +26,100 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // Shopify store URL
 const SHOPIFY_URL = "https://aventus-elite-cards.myshopify.com";
+const SHOPIFY_API = "/products.json";  // Using Shopify's public products API
 
-// Create Shopify search link for a card
-function getShopifyLink(cardName) {
-    return `${SHOPIFY_URL}/search?q=${encodeURIComponent(cardName)}`;
+// Create Shopify product link
+function getShopifyLink(handle) {
+    return `${SHOPIFY_URL}/products/${handle}`;
 }
 
-// Load inventory from inventory.js
-function loadInventory() {
+// Format price
+function formatPrice(price) {
+    return '$' + parseFloat(price).toFixed(2);
+}
+
+// Load inventory from Shopify
+async function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
     const featuredGrid = document.getElementById('featured-grid');
     
-    // Use the inventory from inventory.js if available
-    if (typeof inventory !== 'undefined' && inventory && inventory.length > 0) {
-        // Display regular inventory (excluding featured)
-        const regularInventory = inventory.filter(card => !card.featured);
-        displayInventory(regularInventory);
+    try {
+        // Fetch products from Shopify
+        const response = await fetch(SHOPIFY_API);
+        const data = await response.json();
+        const products = data.products;
         
-        // Display featured cards
-        if (typeof featuredCards !== 'undefined' && featuredCards.length > 0) {
-            displayFeaturedCards(featuredCards);
+        if (products && products.length > 0) {
+            // Display all products
+            displayInventory(products);
+            
+            // Featured section - show top 6 most expensive
+            const featured = [...products].sort((a, b) => b.variants[0].price - a.variants[0].price).slice(0, 6);
+            displayFeaturedCards(featured);
+        } else {
+            inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">📦</div><p class="coming-soon">No products found</p></div>';
         }
-    } else {
-        inventoryGrid.innerHTML = `
-            <div class="card-placeholder">
-                <div class="card-image">📦</div>
-                <p class="coming-soon">Check back soon for our inventory!</p>
-            </div>
-        `;
+    } catch (error) {
+        console.error('Error loading inventory:', error);
+        inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">📦</div><p class="coming-soon">Loading inventory...</p></div>';
     }
 }
 
-function displayFeaturedCards(cards) {
+function displayFeaturedCards(products) {
     const featuredGrid = document.getElementById('featured-grid');
     
-    if (!cards || cards.length === 0) {
+    if (!products || products.length === 0) {
         featuredGrid.innerHTML = '';
         return;
     }
     
-    featuredGrid.innerHTML = cards.map(card => `
+    featuredGrid.innerHTML = products.slice(0, 6).map(product => {
+        const variant = product.variants[0];
+        const image = product.images[0] ? product.images[0].src : '';
+        
+        return `
         <div class="card-item featured-card">
             <div class="featured-badge">💎 PREMIUM</div>
             <div class="card-image">
-                ${card.image ? `<img src="${card.image}" alt="${card.name}" onerror="this.parentElement.innerHTML='🃏'">` : '🃏'}
+                ${image ? `<img src="${image}" alt="${product.title}" onerror="this.parentElement.innerHTML='🃏'">` : '🃏'}
             </div>
             <div class="card-info">
-                <h3>${card.name || 'Sports Card'}</h3>
-                <p class="card-team">${card.team || ''} ${card.year || ''}</p>
-                ${card.grade ? `<span class="card-grade featured-grade">${card.grade}</span>` : ''}
-                <p class="card-price featured-price">$${card.price || '0.00'}</p>
-                <a href="${getShopifyLink(card.name)}" target="_blank" class="shopify-button">🛒 Buy on Shopify</a>
+                <h3>${product.title}</h3>
+                <p class="card-team">${product.vendor || ''}</p>
+                <span class="card-grade featured-grade">${variant.price > 100 ? '$100+' : 'In Stock'}</span>
+                <p class="card-price featured-price">${formatPrice(variant.price)}</p>
+                <a href="${getShopifyLink(product.handle)}" target="_blank" class="shopify-button">🛒 Buy on Shopify</a>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
-function displayInventory(cards) {
+function displayInventory(products) {
     const inventoryGrid = document.getElementById('inventory-grid');
     
-    if (!cards || cards.length === 0) {
-        inventoryGrid.innerHTML = `
-            <div class="card-placeholder">
-                <div class="card-image">📦</div>
-                <p class="coming-soon">Inventory loading...</p>
-            </div>
-        `;
+    if (!products || products.length === 0) {
+        inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">📦</div><p class="coming-soon">No products found</p></div>';
         return;
     }
     
-    // Clear and display cards - show up to 50 cards
-    inventoryGrid.innerHTML = cards.slice(0, 50).map(card => `
+    // Show all products (up to 100)
+    inventoryGrid.innerHTML = products.slice(0, 100).map(product => {
+        const variant = product.variants[0];
+        const image = product.images[0] ? product.images[0].src : '';
+        
+        return `
         <div class="card-item">
             <div class="card-image">
-                ${card.image ? `<img src="${card.image}" alt="${card.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='🃏'">` : '🃏'}
+                ${image ? `<img src="${image}" alt="${product.title}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='🃏'">` : '🃏'}
             </div>
             <div class="card-info">
-                <h3>${card.name || 'Sports Card'}</h3>
-                <p class="card-team">${card.team || ''} ${card.year || ''}</p>
-                ${card.grade ? `<span class="card-grade">${card.grade}</span>` : ''}
-                <p class="card-price">$${card.price || '0.00'}</p>
-                <a href="${getShopifyLink(card.name)}" target="_blank" class="shopify-button">🛒 Buy on Shopify</a>
+                <h3>${product.title}</h3>
+                <p class="card-team">${product.vendor || ''}</p>
+                <p class="card-price">${formatPrice(variant.price)}</p>
+                <a href="${getShopifyLink(product.handle)}" target="_blank" class="shopify-button">🛒 Buy on Shopify</a>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 // Initialize on page load
