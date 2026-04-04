@@ -24,6 +24,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// Shopify store URL
+const SHOPIFY_URL = "https://aventus-elite-cards.myshopify.com";
+
+// Create Shopify search link for a card
+function getShopifyLink(cardName) {
+    return `${SHOPIFY_URL}/search?q=${encodeURIComponent(cardName)}`;
+}
+
 // Load inventory from inventory.js
 function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
@@ -68,6 +76,7 @@ function displayFeaturedCards(cards) {
                 <p class="card-team">${card.team || ''} ${card.year || ''}</p>
                 ${card.grade ? `<span class="card-grade featured-grade">${card.grade}</span>` : ''}
                 <p class="card-price featured-price">$${card.price || '0.00'}</p>
+                <a href="${getShopifyLink(card.name)}" target="_blank" class="shopify-button">🛒 Buy on Shopify</a>
             </div>
         </div>
     `).join('');
@@ -86,7 +95,7 @@ function displayInventory(cards) {
         return;
     }
     
-    // Clear and display cards - show up to 20 cards
+    // Clear and display cards - show up to 50 cards
     inventoryGrid.innerHTML = cards.slice(0, 50).map(card => `
         <div class="card-item">
             <div class="card-image">
@@ -97,6 +106,7 @@ function displayInventory(cards) {
                 <p class="card-team">${card.team || ''} ${card.year || ''}</p>
                 ${card.grade ? `<span class="card-grade">${card.grade}</span>` : ''}
                 <p class="card-price">$${card.price || '0.00'}</p>
+                <a href="${getShopifyLink(card.name)}" target="_blank" class="shopify-button">🛒 Buy on Shopify</a>
             </div>
         </div>
     `).join('');
