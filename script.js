@@ -27,10 +27,18 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Load inventory from inventory.js
 function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
+    const featuredGrid = document.getElementById('featured-grid');
     
     // Use the inventory from inventory.js if available
     if (typeof inventory !== 'undefined' && inventory && inventory.length > 0) {
-        displayInventory(inventory);
+        // Display regular inventory (excluding featured)
+        const regularInventory = inventory.filter(card => !card.featured);
+        displayInventory(regularInventory);
+        
+        // Display featured cards
+        if (typeof featuredCards !== 'undefined' && featuredCards.length > 0) {
+            displayFeaturedCards(featuredCards);
+        }
     } else {
         inventoryGrid.innerHTML = `
             <div class="card-placeholder">
@@ -39,6 +47,30 @@ function loadInventory() {
             </div>
         `;
     }
+}
+
+function displayFeaturedCards(cards) {
+    const featuredGrid = document.getElementById('featured-grid');
+    
+    if (!cards || cards.length === 0) {
+        featuredGrid.innerHTML = '';
+        return;
+    }
+    
+    featuredGrid.innerHTML = cards.map(card => `
+        <div class="card-item featured-card">
+            <div class="featured-badge">💎 PREMIUM</div>
+            <div class="card-image">
+                ${card.image ? `<img src="${card.image}" alt="${card.name}" onerror="this.parentElement.innerHTML='🃏'">` : '🃏'}
+            </div>
+            <div class="card-info">
+                <h3>${card.name || 'Sports Card'}</h3>
+                <p class="card-team">${card.team || ''} ${card.year || ''}</p>
+                ${card.grade ? `<span class="card-grade featured-grade">${card.grade}</span>` : ''}
+                <p class="card-price featured-price">$${card.price || '0.00'}</p>
+            </div>
+        </div>
+    `).join('');
 }
 
 function displayInventory(cards) {
