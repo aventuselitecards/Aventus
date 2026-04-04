@@ -26,7 +26,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // Shopify store URL
 const SHOPIFY_URL = "https://aventus-elite-cards.myshopify.com";
-const SHOPIFY_API = "/products.json";  // Using Shopify's public products API
+const SHOPIFY_API = "https://aventus-elite-cards.myshopify.com/products.json";
 
 // Create Shopify product link
 function getShopifyLink(handle) {
