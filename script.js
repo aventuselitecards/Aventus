@@ -24,20 +24,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Load inventory from localStorage if available
+// Load inventory from inventory.js
 function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
     
-    // Check if there's inventory data stored
-    const storedInventory = localStorage.getItem('aventus_inventory');
-    
-    if (storedInventory) {
-        try {
-            const cards = JSON.parse(storedInventory);
-            displayInventory(cards);
-        } catch (e) {
-            console.error('Error loading inventory:', e);
-        }
+    // Use the inventory from inventory.js if available
+    if (typeof inventory !== 'undefined' && inventory && inventory.length > 0) {
+        displayInventory(inventory);
     } else {
         inventoryGrid.innerHTML = `
             <div class="card-placeholder">
@@ -61,13 +54,16 @@ function displayInventory(cards) {
         return;
     }
     
-    // Clear and display cards
-    inventoryGrid.innerHTML = cards.slice(0, 12).map(card => `
+    // Clear and display cards - show up to 20 cards
+    inventoryGrid.innerHTML = cards.slice(0, 20).map(card => `
         <div class="card-item">
-            <div class="card-image">🃏</div>
+            <div class="card-image">
+                ${card.image ? `<img src="${card.image}" alt="${card.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='🃏'">` : '🃏'}
+            </div>
             <div class="card-info">
                 <h3>${card.name || 'Sports Card'}</h3>
-                <span class="card-grade">${card.grade || 'N/A'}</span>
+                <p class="card-team">${card.team || ''} ${card.year || ''}</p>
+                ${card.grade ? `<span class="card-grade">${card.grade}</span>` : ''}
                 <p class="card-price">$${card.price || '0.00'}</p>
             </div>
         </div>
