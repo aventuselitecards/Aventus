@@ -44,9 +44,14 @@ async function loadInventory() {
     const featuredGrid = document.getElementById('featured-grid');
     
     try {
+        inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading from Shopify...</p></div>';
+        
         // Fetch products from Shopify
+        console.log('Fetching from:', SHOPIFY_API);
         const response = await fetch(SHOPIFY_API);
+        console.log('Response:', response.status);
         const data = await response.json();
+        console.log('Products:', data.products.length);
         const products = data.products;
         
         if (products && products.length > 0) {
@@ -61,7 +66,7 @@ async function loadInventory() {
         }
     } catch (error) {
         console.error('Error loading inventory:', error);
-        inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">📦</div><p class="coming-soon">Loading inventory...</p></div>';
+        inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">❌</div><p class="coming-soon">Error: ' + error.message + '</p></div>';
     }
 }
 
