@@ -46,13 +46,24 @@ async function loadInventory() {
     try {
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading from Shopify...</p></div>';
         
-        // Fetch products from Shopify
-        console.log('Fetching from:', SHOPIFY_API);
-        const response = await fetch(SHOPIFY_API);
-        console.log('Response:', response.status);
-        const data = await response.json();
-        console.log('Products:', data.products.length);
-        const products = data.products;
+        // Fetch ALL products (handling pagination)
+        let allProducts = [];
+        let page = 1;
+        let hasMore = true;
+        
+        while (hasMore) {
+            const response = await fetch(`${SHOPIFY_URL}/products.json?limit=250&page=${page}`);
+            const data = await response.json();
+            if (data.products && data.products.length > 0) {
+                allProducts = allProducts.concat(data.products);
+                page++;
+            } else {
+                hasMore = false;
+            }
+        }
+        
+        console.log('Total products loaded:', allProducts.length);
+        const products = allProducts;
         
         if (products && products.length > 0) {
             // Display all products
@@ -107,8 +118,8 @@ function displayInventory(products) {
         return;
     }
     
-    // Show all products (up to 100)
-    inventoryGrid.innerHTML = products.slice(0, 100).map(product => {
+    // Show all products
+    inventoryGrid.innerHTML = products.map(product => {
         const variant = product.variants[0];
         const image = product.images[0] ? product.images[0].src : '';
         
