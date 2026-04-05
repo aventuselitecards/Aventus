@@ -110,6 +110,89 @@ function displayFeaturedCards(products) {
     `}).join('');
 }
 
+// Pagination and search state
+let allProducts = [];
+let filteredProducts = [];
+let currentPage = 1;
+const productsPerPage = 50;
+
+// Initialize search and pagination
+function initControls() {
+    const searchInput = document.getElementById('search-input');
+    const prevBtn = document.getElementById('prev-page');
+    const nextBtn = document.getElementById('next-page');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+    }
+    if (prevBtn) prevBtn.addEventListener('click', () => changePage(-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => changePage(1));
+}
+
+function handleSearch(e) {
+    const query = e.target.value.toLowerCase();
+    currentPage = 1;
+    
+    if (query.trim() === '') {
+        filteredProducts = allProducts;
+    } else {
+        filteredProducts = allProducts.filter(p => 
+            p.title.toLowerCase().includes(query) ||
+            (p.vendor && p.vendor.toLowerCase().includes(query))
+        );
+    }
+    
+    displayInventoryPage();
+}
+
+function changePage(delta) {
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    const newPage = currentPage + delta;
+    
+    if (newPage >= 1 && newPage <= totalPages) {
+        currentPage = newPage;
+        displayInventoryPage();
+    }
+}
+
+function displayInventoryPage() {
+    const inventoryGrid = document.getElementById('inventory-grid');
+    const pageInfo = document.getElementById('page-info');
+    const prevBtn = document.getElementById('prev-page');
+    const nextBtn = document.getElementById('next-page');
+    
+    const start = (currentPage - 1) * productsPerPage;
+    const end = start + productsPerPage;
+    const pageProducts = filteredProducts.slice(start, end);
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    
+    if (pageProducts.length === 0) {
+        inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">🔍</div><p class="coming-soon">No cards found</p></div>';
+    } else {
+        inventoryGrid.innerHTML = pageProducts.map(product => {
+            const variant = product.variants[0];
+            const image = product.images[0] ? product.images[0].src : '';
+            
+            return `
+            <div class="card-item">
+                <div class="card-image">
+                    ${image ? `<img src="${image}" alt="${product.title}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='🃏'">` : '🃏'}
+                </div>
+                <div class="card-info">
+                    <h3>${product.title}</h3>
+                    <p class="card-team">${product.vendor || ''}</p>
+                    <p class="card-price">${formatPrice(variant.price)}</p>
+                    <a href="${getShopifyLink(product.handle)}" target="_blank" class="shopify-button">🛒 Buy on Shopify</a>
+                </div>
+            </div>
+        `}).join('');
+    }
+    
+    if (pageInfo) pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${filteredProducts.length} cards)`;
+    if (prevBtn) prevBtn.disabled = currentPage === 1;
+    if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+}
+
 function displayInventory(products) {
     const inventoryGrid = document.getElementById('inventory-grid');
     
@@ -118,8 +201,13 @@ function displayInventory(products) {
         return;
     }
     
-    // Show all products
-    inventoryGrid.innerHTML = products.map(product => {
+    allProducts = products;
+    filteredProducts = products;
+    currentPage = 1;
+    
+    displayInventoryPage();
+    initControls();
+}
         const variant = product.variants[0];
         const image = product.images[0] ? product.images[0].src : '';
         
