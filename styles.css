@@ -640,3 +640,18 @@ footer {
     font-weight: bold;
     color: var(--primary);
 }
+
+/* Sort Select */
+.sort-select {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+    outline: none;
+}
+
+.sort-select:focus {
+    border-color: var(--gold);
+}

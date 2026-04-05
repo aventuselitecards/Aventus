@@ -121,12 +121,34 @@ function initControls() {
     const searchInput = document.getElementById('search-input');
     const prevBtn = document.getElementById('prev-page');
     const nextBtn = document.getElementById('next-page');
+    const sortSelect = document.getElementById('sort-select');
     
     if (searchInput) {
         searchInput.addEventListener('input', handleSearch);
     }
     if (prevBtn) prevBtn.addEventListener('click', () => changePage(-1));
     if (nextBtn) nextBtn.addEventListener('click', () => changePage(1));
+    if (sortSelect) sortSelect.addEventListener('change', handleSort);
+}
+
+function handleSort(e) {
+    const sortBy = e.target.value;
+    currentPage = 1;
+    
+    filteredProducts = [...filteredProducts].sort((a, b) => {
+        if (sortBy === 'name') {
+            return a.title.localeCompare(b.title);
+        } else if (sortBy === 'name-desc') {
+            return b.title.localeCompare(a.title);
+        } else if (sortBy === 'price') {
+            return a.variants[0].price - b.variants[0].price;
+        } else if (sortBy === 'price-desc') {
+            return b.variants[0].price - a.variants[0].price;
+        }
+        return 0;
+    });
+    
+    displayInventoryPage();
 }
 
 function handleSearch(e) {
