@@ -655,3 +655,24 @@ footer {
 .sort-select:focus {
     border-color: var(--gold);
 }
+
+/* Scores Section */
+.scores-section {
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: white;
+    text-align: center;
+}
+
+.scores-section h2 {
+    margin-bottom: 1rem;
+    color: var(--gold);
+}
+
+.scores-embed {
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+}
