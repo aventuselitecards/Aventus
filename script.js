@@ -65,7 +65,7 @@ function displayFeaturedCards(products) {
     
     featuredGrid.innerHTML = products.map(p => {
         const v = p.variants[0], img = p.images[0]?.src;
-        return `<div class="card-item featured-card"><div class="featured-badge">💎</div><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><span class="card-grade">$${v.price}+</span><p class="card-price">${formatPrice(v.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">Buy</a></div></div>`;
+        return `<div class="card-item featured-card"><div class="featured-badge">💎</div><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><span class="card-grade">$${v.price}+</span><p class="card-price">${formatPrice(v.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
     }).join('');
 }
 
@@ -82,7 +82,7 @@ function displayInventoryPage() {
     
     grid.innerHTML = pageProds.map(p => {
         const v = p.variants[0], img = p.images[0]?.src;
-        return `<div class="card-item"><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><p class="card-price">${formatPrice(v.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">Buy</a></div></div>`;
+        return `<div class="card-item"><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><p class="card-price">${formatPrice(v.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
     }).join('');
     
     if (info) info.textContent = `Page ${currentPage}/${totalPages}`;
