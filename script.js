@@ -46,20 +46,27 @@ async function loadInventory() {
     try {
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading from Shopify...</p></div>';
         
-        // Fetch ALL products (handling pagination)
+        // Fetch products - try Shopify first
         let allProducts = [];
         let page = 1;
         let hasMore = true;
         
-        while (hasMore) {
-            const response = await fetch(`${SHOPIFY_URL}/products.json?limit=250&page=${page}`);
-            const data = await response.json();
-            if (data.products && data.products.length > 0) {
-                allProducts = allProducts.concat(data.products);
-                page++;
-            } else {
-                hasMore = false;
+        try {
+            while (hasMore) {
+                const response = await fetch(`${SHOPIFY_URL}/products.json?limit=250&page=${page}`);
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                if (data.products && data.products.length > 0) {
+                    allProducts = allProducts.concat(data.products);
+                    page++;
+                } else {
+                    hasMore = false;
+                }
             }
+        } catch (shopifyError) {
+            console.error('Shopify fetch failed:', shopifyError);
+            inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⚠️</div><p class="coming-soon">Shopify temporarily unavailable. Please refresh.</p></div>';
+            return;
         }
         
         console.log('Total products loaded:', allProducts.length);
