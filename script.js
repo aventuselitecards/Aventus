@@ -50,8 +50,10 @@ async function loadInventory() {
     }
     
     if (allProducts.length > 0) {
+        // Featured = top 6 most expensive
+        const sorted = [...allProducts].sort((a,b) => b.variants[0].price - a.variants[0].price);
+        displayFeaturedCards(sorted.slice(0, 6));
         displayInventoryPage();
-        displayFeaturedCards(allProducts.slice(0, 6));
         initControls();
     }
 }
