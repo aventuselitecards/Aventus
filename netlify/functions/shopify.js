@@ -6,23 +6,16 @@ const SHOPIFY_DOMAIN = 'aventus-elite-cards.myshopify.com';
 exports.handler = async (event, context) => {
     try {
         let allProducts = [];
-        let page = 1;
-        let hasNextPage = true;
         
-        // Paginate through all products
-        while (hasNextPage) {
+        // Fetch all pages
+        for (let page = 1; page <= 5; page++) {
             const response = await fetch(`https://${SHOPIFY_DOMAIN}/products.json?limit=250&page=${page}`);
             const data = await response.json();
             
             if (data.products && data.products.length > 0) {
                 allProducts = allProducts.concat(data.products);
-                page++;
-                // If less than 250 returned, we're at the end
-                if (data.products.length < 250) {
-                    hasNextPage = false;
-                }
             } else {
-                hasNextPage = false;
+                break;
             }
         }
         
