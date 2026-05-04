@@ -130,12 +130,30 @@
         <p class="footer-note">Premium Sports Cards | Buy, Sell, Trade</p>
     </footer>
 
-    <script src="inventory.js"></script>
     <script>
-    // Load inventory from inventory.js
-    var inv = window.inventory || [];
-    console.log('Cards loaded:', inv.length);
+    // INLINE INVENTORY DATA - Direct from inventory.js
+    var inventory = [
+  { name: "Caitlin Clark", team: "Indiana Fever", year: 2024, brand: "Panini", price: 142.99, image: "https://storage.googleapis.com/collx-product-images/1032253589169851392-1-Se0T.jpg" },
+  { name: "Michael Jordan", team: "USA", year: 1991, brand: "SkyBox", price: 163.99, image: "https://storage.googleapis.com/collx-product-images/1032251169534594048-1-ECYl.jpg" },
+  { name: "Sidney Moncrief", team: "Milwaukee Bucks", year: 1986, brand: "Fleer", price: 170.76, image: "https://storage.googleapis.com/collx-product-images/1032249910967331840-1-NXTK.jpg" },
+  { name: "Jonah Bride", team: "Miami Marlins", year: 2025, brand: "Topps", price: 1.29, image: "https://storage.googleapis.com/collx-product-images/1037296032929576960-1-nAy.jpg" },
+  { name: "Mickey Moniak", team: "Los Angeles Angels", year: 2025, brand: "Topps", price: 1.49, image: "https://storage.googleapis.com/collx-product-images/1037295387156700160-1-BAMQ.jpg" },
+  { name: "Roki Sasaki", team: "Los Angeles Dodgers", year: 2025, brand: "Topps", price: 1.29, image: "https://storage.googleapis.com/collx-product-images/1037295131387243520-1-OfAt.jpg" },
+  { name: "Aaron Judge", team: "New York Yankees", year: 2025, brand: "Topps", price: 1.49, image: "https://storage.googleapis.com/collx-product-images/1037294950656512000-1-DCF.jpg" },
+  { name: "Nolan Gorman", team: "St. Louis Cardinals", year: 2025, brand: "Topps", price: 0.57, image: "https://storage.googleapis.com/collx-product-images/1037294745034952704-1-Tz69.jpg" },
+  { name: "Cal Ripken Jr.", team: "Baltimore Orioles", year: 2025, brand: "Stadium Club", price: 1.66, image: "https://storage.googleapis.com/collx-product-images/1037291545703747584-1-w87E.jpg" },
+  { name: "Paul Skenes", team: "Pittsburgh Pirates", year: 2025, brand: "Stadium Club", price: 1.15, image: "https://storage.googleapis.com/collx-product-images/1037290355736730624-1-iVRA.jpg" },
+  { name: "Julio Rodríguez", team: "Seattle Mariners", year: 2025, brand: "Stadium Club", price: 0.99, image: "https://storage.googleapis.com/collx-product-images/1037289825292548096-1-mJ.jpg" },
+  { name: "Caden Dana", team: "Los Angeles Angels", year: 2025, brand: "Stadium Club", price: 2.00, image: "https://storage.googleapis.com/collx-product-images/1037289664499683328-1-Sv6J.jpg" },
+  { name: "Frank Thomas", team: "Chicago White Sox", year: 2025, brand: "Stadium Club", price: 3.00, image: "https://storage.googleapis.com/collx-product-images/1037288630787267584-1-RUdy.jpg" },
+  { name: "Shohei Ohtani", team: "Los Angeles Dodgers", year: 2026, brand: "Topps", price: 1.25, image: "https://storage.googleapis.com/collx-product-images/1034557347586075648-1-rzPp.jpg" },
+  { name: "Paul Skenes", team: "Pittsburgh Pirates", year: 2026, brand: "Topps", price: 1.50, image: "https://storage.googleapis.com/collx-product-images/1034557847429671936-1-ifVQ.jpg" },
+  { name: "Jacob Misiorowski", team: "Milwaukee Brewers", year: 2026, brand: "Topps", price: 1.00, image: "https://storage.googleapis.com/collx-product-images/1034558010856529920-1-taWc.jpg" },
+  { name: "Marcelo Mayer", team: "Boston Red Sox", year: 2026, brand: "Topps", price: 0.99, image: "https://storage.googleapis.com/collx-product-images/1034558525110995968-1-SL7f.jpg" }
+];
     
+    // Display inventory
+    var inv = inventory;
     var grid = document.getElementById('inventory-grid');
     if (grid && inv.length > 0) {
         grid.innerHTML = '<h2>Our Inventory (' + inv.length + ' cards)</h2>';
