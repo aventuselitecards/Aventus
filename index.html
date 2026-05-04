@@ -132,7 +132,7 @@
 
     <script src="inventory.js"></script>
     <script>
-    // Load all cards with images
+    // Load all cards with images and links
     window.onload = function() {
         setTimeout(function() {
             const inv = window.inventory || [];
@@ -140,7 +140,9 @@
             if (grid && inv.length > 0) {
                 grid.innerHTML = inv.map(function(c) {
                     const imgUrl = c.image || '';
-                    return '<div class="card-item">' +
+                    const handle = (c.name || 'card').toLowerCase().replace(/\s+/g, '-');
+                    const shopifyUrl = 'https://aventus-elite-cards.myshopify.com/products/' + handle;
+                    return '<a href="' + shopifyUrl + '" target="_blank" class="card-item" style="text-decoration:none;color:inherit;">' +
                         '<div class="card-image">' +
                         (imgUrl ? '<img src="' + imgUrl + '" alt="' + (c.name || '') + '">' : '🃏') +
                         '</div>' +
@@ -148,7 +150,7 @@
                         '<h3>' + (c.name || 'Unknown') + '</h3>' +
                         '<p class="card-team">' + (c.team || '') + '</p>' +
                         '<p class="card-price">$' + (c.price || '0') + '</p>' +
-                        '</div></div>';
+                        '</div></a>';
                 }).join('');
             } else if (grid) {
                 grid.innerHTML = '<p>No inventory found</p>';
