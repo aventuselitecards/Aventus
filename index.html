@@ -132,15 +132,19 @@
 
     <script src="inventory.js"></script>
     <script>
-    // Direct inline test
+    // Direct inline test - wait for inventory.js to load
+    window.onload = function() {
+    setTimeout(function() {
     const inv = window.inventory || [];
     const grid = document.getElementById('inventory-grid');
     if (grid) {
         grid.innerHTML = '<h3>Testing: Found ' + inv.length + ' cards</h3>' + 
-            inv.slice(0,3).map(function(c) {
-                return '<div><b>' + c.name + '</b> - ' + c.team + ' - $' + c.price + '</div>';
+            inv.slice(0,5).map(function(c) {
+                return '<div style="padding:10px;border:1px solid #ccc;margin:5px;"><b>' + c.name + '</b><br>' + c.team + ' - $' + c.price + '</div>';
             }).join('');
         }
+    }, 1000);
+    };
     </script>
 </body>
 </html><!-- force deploy Sat Apr  4 23:25:50 UTC 2026 -->
