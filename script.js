@@ -54,10 +54,10 @@ async function loadInventory() {
                 images: card.image ? [{ src: card.image }] : [],
                 variants: [{ price: card.price }]
             }));
-            console.log('Loaded from inventory.js:', allProducts.length, 'products');
+            alert('Loaded ' + allProducts.length + ' cards from inventory.js!');
         } else {
             allProducts = [];
-            console.log('No products in inventory.js');
+            alert('inventory.js is empty or not loaded');
         }
         
         filteredProducts = allProducts;
