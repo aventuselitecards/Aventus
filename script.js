@@ -19,12 +19,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Shopify config - Storefront API (uses Netlify env vars)
-const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
-const STOREFRONT_TOKEN = "SHOPIFY_STOREFRONT_TOKEN"; // Set in Netlify env vars
-
-const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
-
 function getShopifyLink(handle) {
     return `https://aventus-elite-cards.myshopify.com/products/${handle}`;
 }
