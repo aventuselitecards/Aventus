@@ -132,18 +132,28 @@
 
     <script src="inventory.js"></script>
     <script>
-    // Direct inline test - wait for inventory.js to load
+    // Load all cards with images
     window.onload = function() {
-    setTimeout(function() {
-    const inv = window.inventory || [];
-    const grid = document.getElementById('inventory-grid');
-    if (grid) {
-        grid.innerHTML = '<h3>Testing: Found ' + inv.length + ' cards</h3>' + 
-            inv.slice(0,5).map(function(c) {
-                return '<div style="padding:10px;border:1px solid #ccc;margin:5px;"><b>' + c.name + '</b><br>' + c.team + ' - $' + c.price + '</div>';
-            }).join('');
-        }
-    }, 1000);
+        setTimeout(function() {
+            const inv = window.inventory || [];
+            const grid = document.getElementById('inventory-grid');
+            if (grid && inv.length > 0) {
+                grid.innerHTML = inv.map(function(c) {
+                    const imgUrl = c.image || '';
+                    return '<div class="card-item">' +
+                        '<div class="card-image">' +
+                        (imgUrl ? '<img src="' + imgUrl + '" alt="' + (c.name || '') + '">' : '🃏') +
+                        '</div>' +
+                        '<div class="card-info">' +
+                        '<h3>' + (c.name || 'Unknown') + '</h3>' +
+                        '<p class="card-team">' + (c.team || '') + '</p>' +
+                        '<p class="card-price">$' + (c.price || '0') + '</p>' +
+                        '</div></div>';
+                }).join('');
+            } else if (grid) {
+                grid.innerHTML = '<p>No inventory found</p>';
+            }
+        }, 500);
     };
     </script>
 </body>
