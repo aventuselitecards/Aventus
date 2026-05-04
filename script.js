@@ -33,7 +33,11 @@ let filteredProducts = [];
 let currentPage = 1;
 const productsPerPage = 50;
 
-// Load inventory from inventory.js (local file with all cards)
+// Shopify config - Fetch from Shopify with pagination
+const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
+const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/products.json?limit=250`;
+
+// Load inventory from Shopify
 async function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
     const featuredGrid = document.getElementById('featured-grid');
@@ -41,18 +45,17 @@ async function loadInventory() {
     try {
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading cards...</p></div>';
         
-        if (typeof inventory !== 'undefined') {
-            // Use inventory.js
-            allProducts = inventory.map(card => ({
-                title: card.name,
-                handle: card.name.toLowerCase().replace(/\s+/g, '-'),
-                vendor: card.team,
-                images: card.image ? [{ src: card.image }] : [],
-                variants: [{ price: card.price }]
-            }));
-        } else {
-            allProducts = [];
-        }
+        const response = await fetch(SHOPIFY_API);
+        const data = await response.json();
+        
+        // Convert Shopify format to our format
+        allProducts = (data.products || []).map(p => ({
+            title: p.title,
+            handle: p.handle,
+            vendor: p.vendor || '',
+            images: p.images || [],
+            variants: p.variants || []
+        }));
         
         filteredProducts = allProducts;
     } catch (e) {
@@ -77,7 +80,7 @@ function displayFeaturedCards(products) {
     
     featuredGrid.innerHTML = products.map(p => {
         const v = p.variants?.[0], img = p.images?.[0]?.src;
-        return `<div class="card-item featured-card"><div class="featured-badge">💎</div><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><span class="card-grade">$${v?.price}+</span><p class="card-price">${formatPrice(v?.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
+        return `<div class="card-item featured-card"><div class="featured-badge">💎</div><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><span class="card-grade">$${v?.price || '0'}+</span><p class="card-price">${formatPrice(v?.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
     }).join('');
 }
 
