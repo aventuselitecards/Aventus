@@ -131,45 +131,34 @@
     </footer>
 
     <script>
-    // INLINE INVENTORY DATA - Direct from inventory.js
-    var inventory = [
-  { name: "Caitlin Clark", team: "Indiana Fever", year: 2024, brand: "Panini", price: 142.99, image: "https://storage.googleapis.com/collx-product-images/1032253589169851392-1-Se0T.jpg" },
-  { name: "Michael Jordan", team: "USA", year: 1991, brand: "SkyBox", price: 163.99, image: "https://storage.googleapis.com/collx-product-images/1032251169534594048-1-ECYl.jpg" },
-  { name: "Sidney Moncrief", team: "Milwaukee Bucks", year: 1986, brand: "Fleer", price: 170.76, image: "https://storage.googleapis.com/collx-product-images/1032249910967331840-1-NXTK.jpg" },
-  { name: "Jonah Bride", team: "Miami Marlins", year: 2025, brand: "Topps", price: 1.29, image: "https://storage.googleapis.com/collx-product-images/1037296032929576960-1-nAy.jpg" },
-  { name: "Mickey Moniak", team: "Los Angeles Angels", year: 2025, brand: "Topps", price: 1.49, image: "https://storage.googleapis.com/collx-product-images/1037295387156700160-1-BAMQ.jpg" },
-  { name: "Roki Sasaki", team: "Los Angeles Dodgers", year: 2025, brand: "Topps", price: 1.29, image: "https://storage.googleapis.com/collx-product-images/1037295131387243520-1-OfAt.jpg" },
-  { name: "Aaron Judge", team: "New York Yankees", year: 2025, brand: "Topps", price: 1.49, image: "https://storage.googleapis.com/collx-product-images/1037294950656512000-1-DCF.jpg" },
-  { name: "Nolan Gorman", team: "St. Louis Cardinals", year: 2025, brand: "Topps", price: 0.57, image: "https://storage.googleapis.com/collx-product-images/1037294745034952704-1-Tz69.jpg" },
-  { name: "Cal Ripken Jr.", team: "Baltimore Orioles", year: 2025, brand: "Stadium Club", price: 1.66, image: "https://storage.googleapis.com/collx-product-images/1037291545703747584-1-w87E.jpg" },
-  { name: "Paul Skenes", team: "Pittsburgh Pirates", year: 2025, brand: "Stadium Club", price: 1.15, image: "https://storage.googleapis.com/collx-product-images/1037290355736730624-1-iVRA.jpg" },
-  { name: "Julio Rodríguez", team: "Seattle Mariners", year: 2025, brand: "Stadium Club", price: 0.99, image: "https://storage.googleapis.com/collx-product-images/1037289825292548096-1-mJ.jpg" },
-  { name: "Caden Dana", team: "Los Angeles Angels", year: 2025, brand: "Stadium Club", price: 2.00, image: "https://storage.googleapis.com/collx-product-images/1037289664499683328-1-Sv6J.jpg" },
-  { name: "Frank Thomas", team: "Chicago White Sox", year: 2025, brand: "Stadium Club", price: 3.00, image: "https://storage.googleapis.com/collx-product-images/1037288630787267584-1-RUdy.jpg" },
-  { name: "Shohei Ohtani", team: "Los Angeles Dodgers", year: 2026, brand: "Topps", price: 1.25, image: "https://storage.googleapis.com/collx-product-images/1034557347586075648-1-rzPp.jpg" },
-  { name: "Paul Skenes", team: "Pittsburgh Pirates", year: 2026, brand: "Topps", price: 1.50, image: "https://storage.googleapis.com/collx-product-images/1034557847429671936-1-ifVQ.jpg" },
-  { name: "Jacob Misiorowski", team: "Milwaukee Brewers", year: 2026, brand: "Topps", price: 1.00, image: "https://storage.googleapis.com/collx-product-images/1034558010856529920-1-taWc.jpg" },
-  { name: "Marcelo Mayer", team: "Boston Red Sox", year: 2026, brand: "Topps", price: 0.99, image: "https://storage.googleapis.com/collx-product-images/1034558525110995968-1-SL7f.jpg" }
-];
-    
-    // Display inventory
-    var inv = inventory;
-    var grid = document.getElementById('inventory-grid');
-    if (grid && inv.length > 0) {
-        grid.innerHTML = '<h2>Our Inventory (' + inv.length + ' cards)</h2>';
-        grid.innerHTML += inv.map(function(c) {
-            var imgUrl = c.image || '';
-            var name = c.name || 'Unknown';
-            var team = c.team || '';
-            var price = c.price || '0';
-            var searchUrl = 'https://aventus-elite-cards.myshopify.com/search?q=' + encodeURIComponent(name);
-            return '<a href="' + searchUrl + '" target="_blank" style="display:block;margin:10px 0;padding:10px;border:1px solid #ccc;text-decoration:none;color:#333;">' +
-                '<img src="' + imgUrl + '" alt="' + name + '" style="width:80px;vertical-align:middle;margin-right:10px;"> ' + name + ' - ' + team + ' - $' + price +
-                '</a>';
-        }).join('');
-    } else if (grid) {
-        grid.innerHTML = '<p>No inventory found</p>';
-    }
+    // Fetch from Netlify function (which proxies Shopify)
+    fetch('/.netlify/functions/shopify')
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+        var products = data.products || [];
+        console.log('Loaded', products.length, 'products from Shopify');
+        
+        var grid = document.getElementById('inventory-grid');
+        if (grid && products.length > 0) {
+            grid.innerHTML = '<h2>Our Inventory (' + products.length + ' cards)</h2>';
+            grid.innerHTML += products.map(function(p) {
+                var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
+                var name = p.title || 'Unknown';
+                var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
+                var link = 'https://aventus-elite-cards.myshopify.com/products/' + p.handle;
+                return '<a href="' + link + '" target="_blank" style="display:block;margin:10px 0;padding:10px;border:1px solid #ccc;text-decoration:none;color:#333;">' +
+                    '<img src="' + imgUrl + '" alt="' + name + '" style="width:80px;vertical-align:middle;margin-right:10px;"> ' + name + ' - $' + price +
+                    '</a>';
+            }).join('');
+        } else if (grid) {
+            grid.innerHTML = '<p>No products found in Shopify</p>';
+        }
+    })
+    .catch(function(err) {
+        console.error('Error:', err);
+        var grid = document.getElementById('inventory-grid');
+        if (grid) grid.innerHTML = '<p>Error loading inventory. Please try again later.</p>';
+    });
     </script>
 </body>
 </html><!-- force deploy Sat Apr  4 23:25:50 UTC 2026 -->
