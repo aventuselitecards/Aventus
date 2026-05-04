@@ -37,7 +37,7 @@ const productsPerPage = 50;
 const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
 const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/products.json?limit=250`;
 
-// Load inventory from Shopify with fallback to inventory.js
+// Load inventory - use inventory.js as primary source
 async function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
     const featuredGrid = document.getElementById('featured-grid');
@@ -45,27 +45,8 @@ async function loadInventory() {
     try {
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading cards...</p></div>';
         
-        const response = await fetch(SHOPIFY_API);
-        
-        if (!response.ok) {
-            throw new Error('Shopify API error: ' + response.status);
-        }
-        
-        const data = await response.json();
-        console.log('Shopify response:', data);
-        
-        if (data.products && data.products.length > 0) {
-            // Convert Shopify format to our format
-            allProducts = data.products.map(p => ({
-                title: p.title,
-                handle: p.handle,
-                vendor: p.vendor || '',
-                images: p.images || [],
-                variants: p.variants || []
-            }));
-            console.log('Loaded from Shopify:', allProducts.length, 'products');
-        } else if (typeof inventory !== 'undefined') {
-            // Fallback to inventory.js
+        // Use inventory.js
+        if (typeof inventory !== 'undefined' && inventory.length > 0) {
             allProducts = inventory.map(card => ({
                 title: card.name,
                 handle: card.name.toLowerCase().replace(/\s+/g, '-'),
@@ -76,7 +57,7 @@ async function loadInventory() {
             console.log('Loaded from inventory.js:', allProducts.length, 'products');
         } else {
             allProducts = [];
-            console.log('No products found');
+            console.log('No products in inventory.js');
         }
         
         filteredProducts = allProducts;
