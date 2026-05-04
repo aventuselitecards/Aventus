@@ -1,6 +1,6 @@
 // Shopify config - Using public products.json (no token needed for basic access)
 const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
-const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/products.json`;
+const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/products.json?limit=250`;
 
 // Contact form handling
 document.getElementById('contact-form').addEventListener('submit', function(e) {
