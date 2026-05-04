@@ -33,7 +33,7 @@ let filteredProducts = [];
 let currentPage = 1;
 const productsPerPage = 50;
 
-// Load inventory - try Shopify first, fallback to local inventory.js
+// Load inventory from inventory.js (local file with all cards)
 async function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
     const featuredGrid = document.getElementById('featured-grid');
@@ -41,16 +41,8 @@ async function loadInventory() {
     try {
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading cards...</p></div>';
         
-        // Try Shopify first
-        const response = await fetch(SHOPIFY_API);
-        const data = await response.json();
-        let shopifyProducts = data.products || [];
-        
-        if (shopifyProducts.length > 0) {
-            // Use Shopify if it has products
-            allProducts = shopifyProducts;
-        } else if (typeof inventory !== 'undefined') {
-            // Fallback to local inventory.js
+        if (typeof inventory !== 'undefined') {
+            // Use inventory.js
             allProducts = inventory.map(card => ({
                 title: card.name,
                 handle: card.name.toLowerCase().replace(/\s+/g, '-'),
