@@ -46,7 +46,13 @@ async function loadInventory() {
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading cards...</p></div>';
         
         const response = await fetch(SHOPIFY_API);
+        
+        if (!response.ok) {
+            throw new Error('Shopify API error: ' + response.status);
+        }
+        
         const data = await response.json();
+        console.log('Shopify response:', data);
         
         if (data.products && data.products.length > 0) {
             // Convert Shopify format to our format
@@ -57,6 +63,7 @@ async function loadInventory() {
                 images: p.images || [],
                 variants: p.variants || []
             }));
+            console.log('Loaded from Shopify:', allProducts.length, 'products');
         } else if (typeof inventory !== 'undefined') {
             // Fallback to inventory.js
             allProducts = inventory.map(card => ({
@@ -66,8 +73,10 @@ async function loadInventory() {
                 images: card.image ? [{ src: card.image }] : [],
                 variants: [{ price: card.price }]
             }));
+            console.log('Loaded from inventory.js:', allProducts.length, 'products');
         } else {
             allProducts = [];
+            console.log('No products found');
         }
         
         filteredProducts = allProducts;
