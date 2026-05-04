@@ -132,30 +132,29 @@
 
     <script src="inventory.js"></script>
     <script>
-    // Load all cards - run immediately after inventory.js loads
-    setTimeout(function() {
-        const inv = window.inventory || [];
-        const grid = document.getElementById('inventory-grid');
-        if (grid && inv.length > 0) {
-            grid.innerHTML = inv.map(function(c) {
-                const imgUrl = c.image || '';
-                const name = c.name || '';
-                const searchUrl = 'https://aventus-elite-cards.myshopify.com/search?q=' + encodeURIComponent(name);
-                return '<a href="' + searchUrl + '" target="_blank" class="card-item" style="display:block;text-decoration:none;color:inherit;margin:10px 0;padding:10px;border:1px solid #ccc;">' +
-                    '<div style="display:flex;">' +
-                    '<div style="flex:0 0 100px;">' +
-                    (imgUrl ? '<img src="' + imgUrl + '" alt="' + name + '" style="width:100px;height:auto;">' : '🃏') +
-                    '</div>' +
-                    '<div style="padding:10px;">' +
-                    '<h3 style="margin:0;">' + name + '</h3>' +
-                    '<p style="margin:5px 0;">' + (c.team || '') + '</p>' +
-                    '<p style="margin:0;font-weight:bold;">$' + (c.price || '0') + '</p>' +
-                    '</div></div></a>';
-            }).join('');
-        } else if (grid) {
-            grid.innerHTML = '<p>No inventory found. Cards: ' + (window.inventory ? window.inventory.length : 0) + '</p>';
-        }
-    }, 100);
+    // Debug and load inventory
+    console.log('inventory.js loaded');
+    console.log('window.inventory:', typeof window.inventory, window.inventory ? window.inventory.length : 'undefined/null');
+    
+    var inv = window.inventory || [];
+    console.log('Cards found:', inv.length);
+    
+    var grid = document.getElementById('inventory-grid');
+    if (grid && inv.length > 0) {
+        console.log('Building grid with', inv.length, 'cards');
+        grid.innerHTML = '<h2>Our Inventory (' + inv.length + ' cards)</h2>';
+        grid.innerHTML += inv.map(function(c) {
+            var imgUrl = c.image || '';
+            var name = c.name || 'Unknown';
+            var searchUrl = 'https://aventus-elite-cards.myshopify.com/search?q=' + encodeURIComponent(name);
+            return '<a href="' + searchUrl + '" target="_blank" style="display:block;margin:10px 0;padding:10px;border:1px solid #ccc;text-decoration:none;color:#333;">' +
+                '<img src="' + imgUrl + '" alt="' + name + '" style="width:80px;vertical-align:middle;margin-right:10px;"> ' + name + ' - ' + (c.team || '') + ' - $' + (c.price || '0') +
+                '</a>';
+        }).join('');
+    } else {
+        console.log('No cards to display');
+        if (grid) grid.innerHTML = '<p>No inventory. Debug: window.inventory=' + (typeof window.inventory) + '</p>';
+    }
     </script>
 </body>
 </html><!-- force deploy Sat Apr  4 23:25:50 UTC 2026 -->
