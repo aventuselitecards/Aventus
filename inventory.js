@@ -30,6 +30,9 @@ const inventory = [
 // Featured cards - $100+
 const featuredCards = inventory.filter(card => card.price >= 100);
 
+// Make inventory accessible globally
+window.inventory = inventory;
+
 // Export for use in the site
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = inventory;
