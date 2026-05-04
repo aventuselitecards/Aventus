@@ -130,35 +130,28 @@
         <p class="footer-note">Premium Sports Cards | Buy, Sell, Trade</p>
     </footer>
 
+    <script src="inventory.js"></script>
     <script>
-    // Fetch from Shopify directly - auto-updates when you add cards to Shopify
-    fetch('https://aventus-elite-cards.myshopify.com/products.json?limit=250')
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-        var products = data.products || [];
-        console.log('Loaded from Shopify:', products.length, 'products');
-        
-        var grid = document.getElementById('inventory-grid');
-        if (grid && products.length > 0) {
-            grid.innerHTML = '<h2>Our Inventory (' + products.length + ' cards)</h2>';
-            grid.innerHTML += products.map(function(p) {
-                var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
-                var name = p.title || 'Unknown';
-                var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
-                var shopifyUrl = 'https://aventus-elite-cards.myshopify.com/products/' + p.handle;
-                return '<a href="' + shopifyUrl + '" target="_blank" style="display:block;margin:10px 0;padding:10px;border:1px solid #ccc;text-decoration:none;color:#333;">' +
-                    '<img src="' + imgUrl + '" alt="' + name + '" style="width:80px;vertical-align:middle;margin-right:10px;"> ' + name + ' - $' + price +
-                    '</a>';
-            }).join('');
-        } else if (grid) {
-            grid.innerHTML = '<p>No products found in Shopify</p>';
-        }
-    })
-    .catch(function(err) {
-        console.error('Error loading from Shopify:', err);
-        var grid = document.getElementById('inventory-grid');
-        if (grid) grid.innerHTML = '<p>Error loading inventory</p>';
-    });
+    // Load inventory from inventory.js
+    var inv = window.inventory || [];
+    console.log('Cards loaded:', inv.length);
+    
+    var grid = document.getElementById('inventory-grid');
+    if (grid && inv.length > 0) {
+        grid.innerHTML = '<h2>Our Inventory (' + inv.length + ' cards)</h2>';
+        grid.innerHTML += inv.map(function(c) {
+            var imgUrl = c.image || '';
+            var name = c.name || 'Unknown';
+            var team = c.team || '';
+            var price = c.price || '0';
+            var searchUrl = 'https://aventus-elite-cards.myshopify.com/search?q=' + encodeURIComponent(name);
+            return '<a href="' + searchUrl + '" target="_blank" style="display:block;margin:10px 0;padding:10px;border:1px solid #ccc;text-decoration:none;color:#333;">' +
+                '<img src="' + imgUrl + '" alt="' + name + '" style="width:80px;vertical-align:middle;margin-right:10px;"> ' + name + ' - ' + team + ' - $' + price +
+                '</a>';
+        }).join('');
+    } else if (grid) {
+        grid.innerHTML = '<p>No inventory found</p>';
+    }
     </script>
 </body>
 </html><!-- force deploy Sat Apr  4 23:25:50 UTC 2026 -->
