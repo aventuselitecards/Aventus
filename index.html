@@ -130,7 +130,20 @@
         <p class="footer-note">Premium Sports Cards | Buy, Sell, Trade</p>
     </footer>
 
-    <script src="script.js"></script>
     <script src="inventory.js"></script>
+    <script>
+    // TEST - Inline script
+    console.log('TEST: Running');
+    const inventory = window.inventory || [];
+    alert('Found ' + inventory.length + ' cards in inventory.js');
+    const grid = document.getElementById('inventory-grid');
+    if (grid && inventory.length > 0) {
+        grid.innerHTML = inventory.map(function(card) {
+            return '<div class="card-item"><div class="card-image">🃏</div><div class="card-info"><h3>' + (card.name || 'Unknown') + '</h3><p>' + (card.team || '') + '</p><p>$' + (card.price || '0') + '</p></div></div>';
+        }).join('');
+    } else if (grid) {
+        grid.innerHTML = '<p>No inventory found. Cards: ' + inventory.length + '</p>';
+    }
+    </script>
 </body>
 </html><!-- force deploy Sat Apr  4 23:25:50 UTC 2026 -->
