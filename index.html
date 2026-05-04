@@ -140,14 +140,15 @@
             if (grid && inv.length > 0) {
                 grid.innerHTML = inv.map(function(c) {
                     const imgUrl = c.image || '';
-                    const handle = (c.name || 'card').toLowerCase().replace(/\s+/g, '-');
-                    const shopifyUrl = 'https://aventus-elite-cards.myshopify.com/products/' + handle;
-                    return '<a href="' + shopifyUrl + '" target="_blank" class="card-item" style="text-decoration:none;color:inherit;">' +
+                    const name = c.name || '';
+                    // Search on Shopify by card name
+                    const searchUrl = 'https://aventus-elite-cards.myshopify.com/search?q=' + encodeURIComponent(name);
+                    return '<a href="' + searchUrl + '" target="_blank" class="card-item" style="text-decoration:none;color:inherit;">' +
                         '<div class="card-image">' +
-                        (imgUrl ? '<img src="' + imgUrl + '" alt="' + (c.name || '') + '">' : '🃏') +
+                        (imgUrl ? '<img src="' + imgUrl + '" alt="' + name + '">' : '🃏') +
                         '</div>' +
                         '<div class="card-info">' +
-                        '<h3>' + (c.name || 'Unknown') + '</h3>' +
+                        '<h3>' + name + '</h3>' +
                         '<p class="card-team">' + (c.team || '') + '</p>' +
                         '<p class="card-price">$' + (c.price || '0') + '</p>' +
                         '</div></a>';
