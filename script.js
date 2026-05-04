@@ -1,7 +1,6 @@
-// Import Shopify config
-const SHOPIFY_DOMAIN = window.SHOPIFY_CONFIG?.domain || 'aventus-elite-cards.myshopify.com';
-const STOREFRONT_TOKEN = window.SHOPIFY_CONFIG?.token || '';
-const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
+// Shopify config - Using public products.json (no token needed for basic access)
+const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
+const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/products.json`;
 
 // Contact form handling
 document.getElementById('contact-form').addEventListener('submit', function(e) {
@@ -40,7 +39,7 @@ let filteredProducts = [];
 let currentPage = 1;
 const productsPerPage = 50;
 
-// Load inventory from Shopify Storefront API
+// Load inventory from Shopify
 async function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
     const featuredGrid = document.getElementById('featured-grid');
@@ -48,48 +47,9 @@ async function loadInventory() {
     try {
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading cards...</p></div>';
         
-        const query = `
-        {
-            products(first: 100) {
-                edges {
-                    node {
-                        id
-                        title
-                        handle
-                        vendor
-                        images(first: 1) {
-                            edges {
-                                node {
-                                    url
-                                }
-                            }
-                        }
-                        variants(first: 1) {
-                            edges {
-                                node {
-                                    id
-                                    price {
-                                        amount
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }`;
-        
-        const response = await fetch(SHOPIFY_API, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': STOREFRONT_TOKEN
-            },
-            body: JSON.stringify({ query })
-        });
-        
-        const result = await response.json();
-        allProducts = result.data?.products?.edges?.map(e => e.node) || [];
+        const response = await fetch(SHOPIFY_API);
+        const data = await response.json();
+        allProducts = data.products || [];
         filteredProducts = allProducts;
     } catch (e) {
         console.error(e);
@@ -112,9 +72,8 @@ function displayFeaturedCards(products) {
     if (!products.length) return;
     
     featuredGrid.innerHTML = products.map(p => {
-        const img = p.images?.edges?.[0]?.node?.url;
-        const price = p.variants?.edges?.[0]?.node?.price?.amount || '0';
-        return `<div class="card-item featured-card"><div class="featured-badge">💎</div><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><span class="card-grade">$${price}+</span><p class="card-price">${formatPrice(price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
+        const v = p.variants?.[0], img = p.images?.[0]?.src;
+        return `<div class="card-item featured-card"><div class="featured-badge">💎</div><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><span class="card-grade">$${v?.price}+</span><p class="card-price">${formatPrice(v?.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
     }).join('');
 }
 
@@ -130,9 +89,8 @@ function displayInventoryPage() {
     const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
     
     grid.innerHTML = pageProds.map(p => {
-        const img = p.images?.edges?.[0]?.node?.url;
-        const price = p.variants?.edges?.[0]?.node?.price?.amount || '0';
-        return `<div class="card-item"><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><p class="card-price">${formatPrice(price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
+        const v = p.variants?.[0], img = p.images?.[0]?.src;
+        return `<div class="card-item"><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><p class="card-price">${formatPrice(v?.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
     }).join('');
     
     if (info) info.textContent = `Page ${currentPage}/${totalPages}`;
