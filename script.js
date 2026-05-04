@@ -37,7 +37,7 @@ const productsPerPage = 50;
 const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
 const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/products.json?limit=250`;
 
-// Load inventory from Shopify
+// Load inventory from Shopify with fallback to inventory.js
 async function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
     const featuredGrid = document.getElementById('featured-grid');
@@ -48,14 +48,27 @@ async function loadInventory() {
         const response = await fetch(SHOPIFY_API);
         const data = await response.json();
         
-        // Convert Shopify format to our format
-        allProducts = (data.products || []).map(p => ({
-            title: p.title,
-            handle: p.handle,
-            vendor: p.vendor || '',
-            images: p.images || [],
-            variants: p.variants || []
-        }));
+        if (data.products && data.products.length > 0) {
+            // Convert Shopify format to our format
+            allProducts = data.products.map(p => ({
+                title: p.title,
+                handle: p.handle,
+                vendor: p.vendor || '',
+                images: p.images || [],
+                variants: p.variants || []
+            }));
+        } else if (typeof inventory !== 'undefined') {
+            // Fallback to inventory.js
+            allProducts = inventory.map(card => ({
+                title: card.name,
+                handle: card.name.toLowerCase().replace(/\s+/g, '-'),
+                vendor: card.team,
+                images: card.image ? [{ src: card.image }] : [],
+                variants: [{ price: card.price }]
+            }));
+        } else {
+            allProducts = [];
+        }
         
         filteredProducts = allProducts;
     } catch (e) {
