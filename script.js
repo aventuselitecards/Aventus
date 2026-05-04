@@ -15,8 +15,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Shopify config
-const SHOPIFY_API = "https://aventus-elite-cards.myshopify.com/products.json";
+// Shopify config - Storefront API
+const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
+const STOREFRONT_TOKEN = "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";
+
+const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
 
 function getShopifyLink(handle) {
     return `https://aventus-elite-cards.myshopify.com/products/${handle}`;
@@ -32,7 +35,7 @@ let filteredProducts = [];
 let currentPage = 1;
 const productsPerPage = 50;
 
-// Load inventory
+// Load inventory from Shopify Storefront API
 async function loadInventory() {
     const inventoryGrid = document.getElementById('inventory-grid');
     const featuredGrid = document.getElementById('featured-grid');
@@ -40,11 +43,51 @@ async function loadInventory() {
     try {
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⏳</div><p class="coming-soon">Loading cards...</p></div>';
         
-        const response = await fetch(SHOPIFY_API);
-        const data = await response.json();
-        allProducts = data.products || [];
+        const query = `
+        {
+            products(first: 100) {
+                edges {
+                    node {
+                        id
+                        title
+                        handle
+                        vendor
+                        images(first: 1) {
+                            edges {
+                                node {
+                                    url
+                                }
+                            }
+                        }
+                        variants(first: 1) {
+                            edges {
+                                node {
+                                    id
+                                    price {
+                                        amount
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }`;
+        
+        const response = await fetch(SHOPIFY_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Storefront-Access-Token': STOREFRONT_TOKEN
+            },
+            body: JSON.stringify({ query })
+        });
+        
+        const result = await response.json();
+        allProducts = result.data?.products?.edges?.map(e => e.node) || [];
         filteredProducts = allProducts;
     } catch (e) {
+        console.error(e);
         inventoryGrid.innerHTML = '<div class="card-placeholder"><div class="card-image">⚠️</div><p class="coming-soon">Error loading. Refresh?</p></div>';
         return;
     }
@@ -64,8 +107,9 @@ function displayFeaturedCards(products) {
     if (!products.length) return;
     
     featuredGrid.innerHTML = products.map(p => {
-        const v = p.variants[0], img = p.images[0]?.src;
-        return `<div class="card-item featured-card"><div class="featured-badge">💎</div><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><span class="card-grade">$${v.price}+</span><p class="card-price">${formatPrice(v.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
+        const img = p.images?.edges?.[0]?.node?.url;
+        const price = p.variants?.edges?.[0]?.node?.price?.amount || '0';
+        return `<div class="card-item featured-card"><div class="featured-badge">💎</div><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><span class="card-grade">$${price}+</span><p class="card-price">${formatPrice(price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
     }).join('');
 }
 
@@ -81,8 +125,9 @@ function displayInventoryPage() {
     const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
     
     grid.innerHTML = pageProds.map(p => {
-        const v = p.variants[0], img = p.images[0]?.src;
-        return `<div class="card-item"><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><p class="card-price">${formatPrice(v.price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
+        const img = p.images?.edges?.[0]?.node?.url;
+        const price = p.variants?.edges?.[0]?.node?.price?.amount || '0';
+        return `<div class="card-item"><div class="card-image">${img ? `<img src="${img}" alt="${p.title}">` : '🃏'}</div><div class="card-info"><h3>${p.title}</h3><p class="card-team">${p.vendor||''}</p><p class="card-price">${formatPrice(price)}</p><a href="${getShopifyLink(p.handle)}" target="_blank" class="shopify-button">View</a></div></div>`;
     }).join('');
     
     if (info) info.textContent = `Page ${currentPage}/${totalPages}`;
