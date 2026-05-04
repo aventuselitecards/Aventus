@@ -1,3 +1,8 @@
+// Import Shopify config
+const SHOPIFY_DOMAIN = window.SHOPIFY_CONFIG?.domain || 'aventus-elite-cards.myshopify.com';
+const STOREFRONT_TOKEN = window.SHOPIFY_CONFIG?.token || '';
+const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
+
 // Contact form handling
 document.getElementById('contact-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -15,9 +20,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Shopify config - Storefront API
+// Shopify config - Storefront API (uses Netlify env vars)
 const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
-const STOREFRONT_TOKEN = "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";
+const STOREFRONT_TOKEN = "SHOPIFY_STOREFRONT_TOKEN"; // Set in Netlify env vars
 
 const SHOPIFY_API = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
 
