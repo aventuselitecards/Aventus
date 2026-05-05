@@ -139,10 +139,21 @@
         allProducts = data.products || [];
         filteredProducts = allProducts;
         console.log('Loaded', allProducts.length, 'products');
+        
+        // Show count in inventory section
+        var grid = document.getElementById('inventory-grid');
+        if (grid) {
+            grid.innerHTML = '<p style="padding:20px;font-size:18px;">📦 Loading ' + allProducts.length + ' products...</p>';
+        }
+        
         displayProducts(currentPage);
     })
     .catch(function(err) {
         console.error('Error:', err);
+        var grid = document.getElementById('inventory-grid');
+        if (grid) {
+            grid.innerHTML = '<p style="padding:20px;color:red;">Error loading inventory: ' + err.message + '</p>';
+        }
     });
     
     // Connect the search box in HTML to the search function
