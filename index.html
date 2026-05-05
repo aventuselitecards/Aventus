@@ -214,7 +214,7 @@
         
         // Products (use existing search box and buttons from HTML)
         html += pageProducts.map(function(p) {
-            var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
+            var imgUrl = p.images && p.images[0] ? p.images[0].src.replace(/\\//g, '/') : '';
             var name = p.title || 'Unknown';
             var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
             var link = 'https://aventus-elite-cards.myshopify.com/products/' + p.handle;
