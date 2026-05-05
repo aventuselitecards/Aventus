@@ -133,16 +133,21 @@
     var currentPage = 1;
     
     // Fetch from Netlify function
+    console.log('Starting fetch...');
     fetch('/.netlify/functions/shopify')
-    .then(function(response) { return response.json(); })
+    .then(function(response) {
+        console.log('Response:', response.status);
+        return response.json();
+    })
     .then(function(data) {
+        console.log('Data received:', data.products ? data.products.length : 0);
         allProducts = data.products || [];
         filteredProducts = allProducts;
         console.log('Loaded', allProducts.length, 'products');
         displayProducts(currentPage);
     })
     .catch(function(err) {
-        console.error('Error:', err);
+        console.error('Fetch error:', err);
     });
     
     // Connect the search box in HTML to the search function
