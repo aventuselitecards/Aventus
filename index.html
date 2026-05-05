@@ -145,29 +145,45 @@
         console.error('Error:', err);
     });
     
-    // Connect the search box in HTML to the search function
-    document.getElementById('search-input').addEventListener('input', function(e) {
-        searchProducts(e.target.value);
-    });
-    
-    // Connect sort dropdown
-    document.getElementById('sort-select').addEventListener('change', function(e) {
-        sortProducts(e.target.value);
-    });
-    
-    // Connect pagination buttons
-    document.getElementById('prev-page').addEventListener('click', function() {
-        if (currentPage > 1) {
-            currentPage--;
-            displayProducts(currentPage);
+    // Wait for DOM ready before connecting event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Connect the search box in HTML to the search function
+        var searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                searchProducts(e.target.value);
+            });
         }
-    });
-    
-    document.getElementById('next-page').addEventListener('click', function() {
-        var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            displayProducts(currentPage);
+        
+        // Connect sort dropdown
+        var sortSelect = document.getElementById('sort-select');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function(e) {
+                sortProducts(e.target.value);
+            });
+        }
+        
+        // Connect pagination buttons
+        var prevBtn = document.getElementById('prev-page');
+        var nextBtn = document.getElementById('next-page');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayProducts(currentPage);
+                }
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayProducts(currentPage);
+                }
+            });
         }
     });
     
