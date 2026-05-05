@@ -28,7 +28,6 @@
     <section id="home" class="hero">
         <div class="hero-PSA-slabs"></div>
         <div class="hero-content">
-            <h1>Aventus Elite Cards</h1>
             <h1>🏆 Premium Sports Cards 🏆</h1>
             <p>Elite collection. Elite service. Your trusted source for sports cards.</p>
             <p class="hero-tagline">🏈 Baseball ⚾ • 🏀 Basketball 🏀 • 🏈 Football 🏈</p>
@@ -133,65 +132,43 @@
     var currentPage = 1;
     
     // Fetch from Netlify function
-    console.log('Starting fetch...');
     fetch('/.netlify/functions/shopify')
-    .then(function(response) {
-        console.log('Response:', response.status);
-        return response.json();
-    })
+    .then(function(response) { return response.json(); })
     .then(function(data) {
-        console.log('Data received:', data.products ? data.products.length : 0);
         allProducts = data.products || [];
         filteredProducts = allProducts;
         console.log('Loaded', allProducts.length, 'products');
         displayProducts(currentPage);
     })
     .catch(function(err) {
-        console.error('Fetch error:', err);
+        console.error('Error:', err);
     });
     
     // Connect the search box in HTML to the search function
-    var searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        console.log('Search input found!');
-        searchInput.addEventListener('input', function(e) {
-            console.log('Search triggered:', e.target.value);
-            searchProducts(e.target.value);
-        });
-    } else {
-        console.log('Search input NOT found');
-    }
+    document.getElementById('search-input').addEventListener('input', function(e) {
+        searchProducts(e.target.value);
+    });
     
     // Connect sort dropdown
-    var sortSelect = document.getElementById('sort-select');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', function(e) {
-            sortProducts(e.target.value);
-        });
-    }
+    document.getElementById('sort-select').addEventListener('change', function(e) {
+        sortProducts(e.target.value);
+    });
     
     // Connect pagination buttons
-    var prevBtn = document.getElementById('prev-page');
-    var nextBtn = document.getElementById('next-page');
+    document.getElementById('prev-page').addEventListener('click', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            displayProducts(currentPage);
+        }
+    });
     
-    if (prevBtn) {
-        prevBtn.addEventListener('click', function() {
-            if (currentPage > 1) {
-                currentPage--;
-                displayProducts(currentPage);
-            }
-        });
-    }
-    
-    if (nextBtn) {
-        nextBtn.addEventListener('click', function() {
-            var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                displayProducts(currentPage);
-            }
-        });
-    }
+    document.getElementById('next-page').addEventListener('click', function() {
+        var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayProducts(currentPage);
+        }
+    });
     
     function sortProducts(sortType) {
         if (sortType === 'name') {
@@ -236,7 +213,7 @@
         
         // Products (use existing search box and buttons from HTML)
         html += pageProducts.map(function(p) {
-            var imgUrl = p.images && p.images[0] ? p.images[0].src.replace(/\\//g, '/') : '';
+            var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
             var name = p.title || 'Unknown';
             var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
             var link = 'https://aventus-elite-cards.myshopify.com/products/' + p.handle;
