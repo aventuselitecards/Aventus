@@ -36,12 +36,6 @@
         </div>
     </section>
 
-    <section id="featured" class="featured">
-        <h2>💎 Featured Cards</h2>
-        <p class="section-subtitle">Check out some highlights from our collection</p>
-        <div class="featured-grid" id="featured-grid"></div>
-    </section>
-
     <!--_scores-section>
         <h2>⚾ Today's MLB Scores</h2>
         <div class="scores-embed">
@@ -150,6 +144,46 @@
         console.error('Error:', err);
     });
     
+    // Connect the search box in HTML to the search function
+    document.getElementById('search-input').addEventListener('input', function(e) {
+        searchProducts(e.target.value);
+    });
+    
+    // Connect sort dropdown
+    document.getElementById('sort-select').addEventListener('change', function(e) {
+        sortProducts(e.target.value);
+    });
+    
+    // Connect pagination buttons
+    document.getElementById('prev-page').addEventListener('click', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            displayProducts(currentPage);
+        }
+    });
+    
+    document.getElementById('next-page').addEventListener('click', function() {
+        var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayProducts(currentPage);
+        }
+    });
+    
+    function sortProducts(sortType) {
+        if (sortType === 'name') {
+            filteredProducts.sort(function(a, b) { return a.title.localeCompare(b.title); });
+        } else if (sortType === 'name-desc') {
+            filteredProducts.sort(function(a, b) { return b.title.localeCompare(a.title); });
+        } else if (sortType === 'price') {
+            filteredProducts.sort(function(a, b) { return parseFloat(a.variants[0].price) - parseFloat(b.variants[0].price); });
+        } else if (sortType === 'price-desc') {
+            filteredProducts.sort(function(a, b) { return parseFloat(b.variants[0].price) - parseFloat(a.variants[0].price); });
+        }
+        currentPage = 1;
+        displayProducts(currentPage);
+    }
+    
     function searchProducts(query) {
         query = query.toLowerCase();
         if (!query) {
@@ -177,31 +211,7 @@
         
         var html = '';
         
-        // Featured cards on first page
-        if (page === 1) {
-            var featured = allProducts.slice(0, 6);
-            html += '<h2>Featured Cards</h2>';
-            html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:15px;margin-bottom:25px;padding:15px;background:#f9f9f9;">';
-            featured.forEach(function(p) {
-                var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
-                var name = p.title || 'Unknown';
-                var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
-                var link = 'https://aventus-elite-cards.myshopify.com/products/' + p.handle;
-                html += '<a href="' + link + '" target="_blank" style="border:2px solid #FFD700;padding:10px;text-decoration:none;color:#333;display:block;text-align:center;background:#fff;">';
-                html += (imgUrl ? '<img src="' + imgUrl + '" alt="' + name + '" style="width:100%;max-width:100px;">' : '') + '<br><b>' + name + '</b><br>$' + price + '</a>';
-            });
-            html += '</div>';
-        }
-        
-        // Inventory header
-        html += '<h2>All Inventory (' + filteredProducts.length + ' cards)</h2>';
-        
-        // Search box
-        html += '<div style="margin:15px 0;">';
-        html += '<input type="text" id="searchBox" placeholder="Search cards..." oninput="searchProducts(this.value)" style="padding:10px;width:300px;font-size:16px;border:1px solid #ccc;">';
-        html += '</div>';
-        
-        // Products
+        // Products (use existing search box and buttons from HTML)
         html += pageProducts.map(function(p) {
             var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
             var name = p.title || 'Unknown';
@@ -212,19 +222,10 @@
                 '</a>';
         }).join('');
         
-        // Pagination
-        var nav = '<div style="margin:20px 0;text-align:center;">';
-        if (page > 1) {
-            nav += '<a href="javascript:displayProducts(' + (page - 1) + ')" style="padding:10px 20px;margin:5px;background:#333;color:#fff;text-decoration:none;">&laquo; Previous</a>';
-        }
-        nav += ' Page ' + page + ' of ' + totalPages + ' ';
-        if (page < totalPages) {
-            nav += '<a href="javascript:displayProducts(' + (page + 1) + ')" style="padding:10px 20px;margin:5px;background:#333;color:#fff;text-decoration:none;">Next &raquo;</a>';
-        }
-        nav += '</div>';
-        html += nav;
-        
         grid.innerHTML = html;
+        
+        // Update page info display
+        document.getElementById('page-info').textContent = 'Page ' + page + ' of ' + totalPages;
     }
     </script>
 </body>
