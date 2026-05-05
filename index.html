@@ -145,47 +145,44 @@
         console.error('Error:', err);
     });
     
-    // Wait for DOM ready before connecting event listeners
-    document.addEventListener('DOMContentLoaded', function() {
-        // Connect the search box in HTML to the search function
-        var searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                searchProducts(e.target.value);
-            });
-        }
-        
-        // Connect sort dropdown
-        var sortSelect = document.getElementById('sort-select');
-        if (sortSelect) {
-            sortSelect.addEventListener('change', function(e) {
-                sortProducts(e.target.value);
-            });
-        }
-        
-        // Connect pagination buttons
-        var prevBtn = document.getElementById('prev-page');
-        var nextBtn = document.getElementById('next-page');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', function() {
-                if (currentPage > 1) {
-                    currentPage--;
-                    displayProducts(currentPage);
-                }
-            });
-        }
-        
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
-                var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    displayProducts(currentPage);
-                }
-            });
-        }
-    });
+    // Connect the search box in HTML to the search function
+    var searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            searchProducts(e.target.value);
+        });
+    }
+    
+    // Connect sort dropdown
+    var sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function(e) {
+            sortProducts(e.target.value);
+        });
+    }
+    
+    // Connect pagination buttons
+    var prevBtn = document.getElementById('prev-page');
+    var nextBtn = document.getElementById('next-page');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayProducts(currentPage);
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayProducts(currentPage);
+            }
+        });
+    }
     
     function sortProducts(sortType) {
         if (sortType === 'name') {
