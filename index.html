@@ -131,8 +131,9 @@
     </footer>
 
     <script>
-    // Variables for pagination
+    // Variables for pagination and search
     var allProducts = [];
+    var filteredProducts = [];
     var productsPerPage = 50;
     var currentPage = 1;
     
@@ -141,6 +142,7 @@
     .then(function(response) { return response.json(); })
     .then(function(data) {
         allProducts = data.products || [];
+        filteredProducts = allProducts;
         console.log('Loaded', allProducts.length, 'products from Shopify');
         displayProducts(currentPage);
     })
@@ -150,16 +152,38 @@
         if (grid) grid.innerHTML = '<p>Error loading inventory. Please try again later.</p>';
     });
     
+    function searchProducts(query) {
+        query = query.toLowerCase();
+        if (!query) {
+            filteredProducts = allProducts;
+        } else {
+            filteredProducts = allProducts.filter(function(p) {
+                return p.title.toLowerCase().includes(query);
+            });
+        }
+        currentPage = 1;
+        displayProducts(currentPage);
+    }
+    
     function displayProducts(page) {
         var grid = document.getElementById('inventory-grid');
-        if (!grid || allProducts.length === 0) return;
+        if (!grid) return;
+        
+        if (filteredProducts.length === 0) {
+            grid.innerHTML = '<p>No products found matching your search.</p>';
+            return;
+        }
         
         var start = (page - 1) * productsPerPage;
         var end = start + productsPerPage;
-        var pageProducts = allProducts.slice(start, end);
-        var totalPages = Math.ceil(allProducts.length / productsPerPage);
+        var pageProducts = filteredProducts.slice(start, end);
+        var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
         
-        grid.innerHTML = '<h2>Our Inventory (' + allProducts.length + ' cards - Page ' + page + ' of ' + totalPages + ')</h2>';
+        grid.innerHTML = '<h2>Our Inventory (' + filteredProducts.length + ' cards - Page ' + page + ' of ' + totalPages + ')</h2>';
+        
+        // Add search box
+        grid.innerHTML += '<div style="margin:15px 0;"><input type="text" id="searchBox" placeholder="Search cards..." onkeyup="searchProducts(this.value)" style="padding:10px;width:300px;font-size:16px;border:1px solid #ccc;"></div>';
+        
         grid.innerHTML += pageProducts.map(function(p) {
             var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
             var name = p.title || 'Unknown';
