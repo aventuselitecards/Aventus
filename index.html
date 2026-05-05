@@ -137,13 +137,13 @@
     var productsPerPage = 50;
     var currentPage = 1;
     
-    // Fetch from Netlify function (which proxies Shopify)
+    // Fetch from Netlify function
     fetch('/.netlify/functions/shopify')
     .then(function(response) { return response.json(); })
     .then(function(data) {
         allProducts = data.products || [];
         filteredProducts = allProducts;
-        console.log('Loaded', allProducts.length, 'products from Shopify');
+        console.log('Loaded', allProducts.length, 'products');
         displayProducts(currentPage);
     })
     .catch(function(err) {
@@ -165,10 +165,8 @@
     
     function displayProducts(page) {
         var grid = document.getElementById('inventory-grid');
-        if (!grid) return;
-        
-        if (filteredProducts.length === 0) {
-            grid.innerHTML = '<p>No products found.</p>';
+        if (!grid || filteredProducts.length === 0) {
+            if (grid) grid.innerHTML = '<p>No products found.</p>';
             return;
         }
         
@@ -177,9 +175,26 @@
         var pageProducts = filteredProducts.slice(start, end);
         var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
         
-        console.log('Showing page', page, 'of', totalPages, 'total pages,', filteredProducts.length, 'products');
+        var html = '';
         
-        var html = '<h2>Our Inventory (' + filteredProducts.length + ' cards)</h2>';
+        // Featured cards on first page when not searching
+        if (page === 1) {
+            var featured = allProducts.slice(0, 6);
+            html += '<h2>Featured Cards</h2>';
+            html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:15px;margin-bottom:25px;">';
+            featured.forEach(function(p) {
+                var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
+                var name = p.title || 'Unknown';
+                var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
+                var link = 'https://aventus-elite-cards.myshopify.com/products/' + p.handle;
+                html += '<a href="' + link + '" target="_blank" style="border:2px solid #FFD700;padding:10px;text-decoration:none;color:#333;display:block;text-align:center;">';
+                html += (imgUrl ? '<img src="' + imgUrl + '" alt="' + name + '" style="width:100%;max-width:120px;">' : '') + '<br><b>' + name + '</b><br>$' + price + '</a>';
+            });
+            html += '</div>';
+        }
+        
+        // Inventory header
+        html += '<h2>All Inventory (' + filteredProducts.length + ' cards)</h2>';
         
         // Search box
         html += '<div style="margin:15px 0;">';
