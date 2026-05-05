@@ -148,9 +148,13 @@
     // Connect the search box in HTML to the search function
     var searchInput = document.getElementById('search-input');
     if (searchInput) {
+        console.log('Search input found!');
         searchInput.addEventListener('input', function(e) {
+            console.log('Search triggered:', e.target.value);
             searchProducts(e.target.value);
         });
+    } else {
+        console.log('Search input NOT found');
     }
     
     // Connect sort dropdown
