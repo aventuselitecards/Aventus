@@ -136,6 +136,7 @@
     var filteredProducts = [];
     var productsPerPage = 50;
     var currentPage = 1;
+    var searchQuery = '';
     
     // Fetch from Netlify function (which proxies Shopify)
     fetch('/.netlify/functions/shopify')
@@ -153,6 +154,7 @@
     });
     
     function searchProducts(query) {
+        searchQuery = query;
         query = query.toLowerCase();
         if (!query) {
             filteredProducts = allProducts;
@@ -179,12 +181,30 @@
         var pageProducts = filteredProducts.slice(start, end);
         var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
         
-        grid.innerHTML = '<h2>Our Inventory (' + filteredProducts.length + ' cards - Page ' + page + ' of ' + totalPages + ')</h2>';
+        var html = '';
+        
+        // Show featured cards on first page only
+        if (page === 1 && !searchQuery) {
+            var featured = allProducts.slice(0, 6);
+            html += '<h2>Featured Cards</h2>';
+            html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;margin-bottom:30px;">';
+            featured.forEach(function(p) {
+                var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
+                var name = p.title || 'Unknown';
+                var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
+                var link = 'https://aventus-elite-cards.myshopify.com/products/' + p.handle;
+                html += '<a href="' + link + '" target="_blank" style="border:2px solid #gold;padding:10px;text-decoration:none;color:#333;display:block;">';
+                html += (imgUrl ? '<img src="' + imgUrl + '" alt="' + name + '" style="width:100%;">' : '') + name + '<br><b>$' + price + '</b></a>';
+            });
+            html += '</div>';
+        }
+        
+        html += '<h2>Our Inventory (' + filteredProducts.length + ' cards - Page ' + page + ' of ' + totalPages + ')</h2>';
         
         // Add search box
-        grid.innerHTML += '<div style="margin:15px 0;"><input type="text" id="searchBox" placeholder="Search cards..." onkeyup="searchProducts(this.value)" style="padding:10px;width:300px;font-size:16px;border:1px solid #ccc;"></div>';
+        html += '<div style="margin:15px 0;"><input type="text" id="searchBox" placeholder="Search cards..." onkeyup="searchProducts(this.value)" style="padding:10px;width:300px;font-size:16px;border:1px solid #ccc;"></div>';
         
-        grid.innerHTML += pageProducts.map(function(p) {
+        html += pageProducts.map(function(p) {
             var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
             var name = p.title || 'Unknown';
             var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
@@ -204,7 +224,9 @@
             nav += '<a href="javascript:displayProducts(' + (page + 1) + ')" style="padding:10px 20px;margin:5px;background:#333;color:#fff;text-decoration:none;">Next &raquo;</a>';
         }
         nav += '</div>';
-        grid.innerHTML += nav;
+        html += nav;
+        
+        grid.innerHTML = html;
     }
     </script>
 </body>
