@@ -135,7 +135,10 @@
     
     // Fetch from Netlify function
     fetch('/.netlify/functions/shopify')
-    .then(function(response) { return response.json(); })
+    .then(function(response) { 
+        console.log('Response status:', response.status);
+        return response.json(); 
+    })
     .then(function(data) {
         allProducts = data.products || [];
         filteredProducts = allProducts;
