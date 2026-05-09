@@ -133,8 +133,8 @@
     var productsPerPage = 50;
     var currentPage = 1;
     
-    // Fetch from Netlify function
-    fetch('/.netlify/functions/shopify')
+    // Fetch from Netlify function (with cache bust)
+    fetch('/.netlify/functions/shopify?t=' + Date.now())
     .then(function(response) { 
         console.log('Response status:', response.status);
         return response.json(); 
