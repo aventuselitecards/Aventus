@@ -1,30 +1,38 @@
-// Netlify function to fetch products from Shopify
-// Uses public API - gets up to available products
+// Netlify function: live published products from public products.json
+// Does not use Admin API tokens. Draft/unpublished Shopify items and CollX-only
+// inventory will not appear here.
 
-const SHOPIFY_DOMAIN = 'aventus-elite-cards.myshopify.com';
+const SHOPIFY_DOMAIN = "aventus-elite-cards.myshopify.com";
+const PAGE_SIZE = 250;
+const MAX_PAGES = 40;
 
-exports.handler = async (event, context) => {
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json"
+};
+
+exports.handler = async function () {
     try {
-        let allProducts = [];
-        
-        // Fetch all available pages
-        for (let page = 1; page <= 10; page++) {
-            const response = await fetch(`https://${SHOPIFY_DOMAIN}/products.json?limit=250&page=${page}`);
-            const data = await response.json();
-            
-            if (data.products && data.products.length > 0) {
-                allProducts = allProducts.concat(data.products);
-            } else {
-                break;
+        var allProducts = [];
+
+        for (var page = 1; page <= MAX_PAGES; page++) {
+            var url = "https://" + SHOPIFY_DOMAIN + "/products.json?limit=" + PAGE_SIZE + "&page=" + page;
+            var response = await fetch(url);
+            if (!response.ok) {
+                throw new Error("Shopify products.json failed: " + response.status);
             }
+            var data = await response.json();
+            var products = (data && data.products) || [];
+            if (!products.length) break;
+            allProducts = allProducts.concat(products);
+            if (products.length < PAGE_SIZE) break;
         }
-        
+
         return {
             statusCode: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json'
-            },
+            headers: Object.assign({}, corsHeaders, {
+                "Cache-Control": "public, max-age=60, must-revalidate"
+            }),
             body: JSON.stringify({
                 products: allProducts,
                 count: allProducts.length
@@ -33,6 +41,9 @@ exports.handler = async (event, context) => {
     } catch (error) {
         return {
             statusCode: 500,
+            headers: Object.assign({}, corsHeaders, {
+                "Cache-Control": "no-store"
+            }),
             body: JSON.stringify({ error: error.message })
         };
     }
