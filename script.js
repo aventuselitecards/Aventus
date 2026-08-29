@@ -57,6 +57,9 @@
         }
         return src;
     }
+    function hasImage(p) {
+        return Boolean(imageUrl(p));
+    }
     function haystack(p) {
         return ((p.title || "") + " " + (p.vendor || "") + " " + (p.product_type || "") + " " + (p.tags || "") + " " + (p.handle || "")).toLowerCase();
     }
@@ -97,7 +100,13 @@
             img.src = imgSrc;
             img.alt = name;
             img.loading = "lazy";
+            img.addEventListener("error", function () {
+                img.remove();
+                imageWrap.classList.add("is-placeholder");
+            });
             imageWrap.appendChild(img);
+        } else {
+            imageWrap.classList.add("is-placeholder");
         }
         article.appendChild(imageWrap);
 
@@ -277,8 +286,9 @@
 
     function renderRails() {
         var inStock = allProducts.filter(isAvailable);
-        var featured = inStock.slice().sort(function (a, b) { return productPrice(b) - productPrice(a); }).slice(0, 8);
-        var value = inStock.filter(function (p) { return productPrice(p) < 5; }).slice(0, 12);
+        var withPhoto = inStock.filter(hasImage);
+        var featured = withPhoto.slice().sort(function (a, b) { return productPrice(b) - productPrice(a); }).slice(0, 8);
+        var value = withPhoto.filter(function (p) { return productPrice(p) < 5; }).slice(0, 12);
         fillGrid(document.getElementById("featured-grid"), featured, "No high-end cards in stock right now.", { badge: "Featured" });
         fillGrid(document.getElementById("value-grid"), value, "No cards under $5 in stock right now.");
     }
