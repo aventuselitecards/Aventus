@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aventus Elite Cards | Premium Sports Card Inventory</title>
+    <title>Aventus Elite Cards</title>
+    <meta name="description" content="Aventus Elite Cards — graded and raw sports cards. Browse live inventory and check out through Shopify.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script>
-      window.SHOPIFY_CONFIG = {
-        domain: 'aventus-elite-cards.myshopify.com',
-        token: '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'
-      };
-    </script>
+    <link rel="icon" href="images/logo.png">
 </head>
 <body>
     <header>
         <nav>
-            <div class="logo"><img src="images/logo.png" alt="Aventus Elite Cards" style="height:60px;"></div>
+            <a class="logo" href="#home"><img src="images/logo.png" alt="Aventus Elite Cards"></a>
             <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
+                <li><a href="#featured">Featured</a></li>
                 <li><a href="#inventory">Inventory</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -26,212 +25,131 @@
     </header>
 
     <section id="home" class="hero">
-        <div class="hero-PSA-slabs"></div>
         <div class="hero-content">
+            <img class="hero-logo" src="images/logo.png" alt="">
+            <p class="eyebrow">Collector-run · Graded and raw</p>
             <h1>Aventus Elite Cards</h1>
-            <h1>🏆 Premium Sports Cards 🏆</h1>
-            <p>Elite collection. Elite service. Your trusted source for sports cards.</p>
-            <p class="hero-tagline">🏈 Baseball ⚾ • 🏀 Basketball 🏀 • 🏈 Football 🏈</p>
-            <a href="#inventory" class="cta-button">🔥 View Our Inventory 🔥</a>
-            <p class="hero-note">🎯 New cards added daily! • 💰 Great prices • 🚀 Fast shipping</p>
+            <p class="lede">Sports cards sourced with a collector's eye. Listed clearly, priced honestly, packed like they matter.</p>
+            <a href="#inventory" class="cta-button">Browse inventory</a>
         </div>
     </section>
 
-    <!--_scores-section>
-        <h2>⚾ Today's MLB Scores</h2>
-        <div class="scores-embed">
-            <iframe src="https://www.espn.com/espn embed/_/sport/MLB" 
-                    style="width:100%;height:400px;border:none;" 
-                    scrolling="no"
-                    title="MLB Scores"></iframe>
+    <section class="notify" id="notify">
+        <form id="notify-form" class="notify-form">
+            <div>
+                <p class="eyebrow">New drops</p>
+                <h2>Get notified when new cards hit the shop</h2>
+                <p>Leave your email. We will write you when fresh inventory is listed — no fake list, it goes straight to the shop.</p>
+            </div>
+            <div class="notify-row">
+                <input type="email" name="email" placeholder="Email address" required>
+                <button type="submit" class="submit-button">Notify me</button>
+            </div>
+        </form>
+    </section>
+
+    <section id="featured" class="rail">
+        <div class="rail-head">
+            <div>
+                <p class="eyebrow">High-end</p>
+                <h2>Featured</h2>
+            </div>
+            <button type="button" class="text-link" id="view-featured" data-filter="featured">View in inventory</button>
         </div>
-    </section-->
+        <div class="inventory-grid rail-grid" id="featured-grid">
+            <p class="coming-soon">Loading featured cards...</p>
+        </div>
+    </section>
+
+    <section id="value" class="rail rail-alt">
+        <div class="rail-head">
+            <div>
+                <p class="eyebrow">Accessible</p>
+                <h2>Under $5</h2>
+            </div>
+            <button type="button" class="text-link" id="view-value" data-filter="under5">View all under $5</button>
+        </div>
+        <div class="inventory-grid rail-grid" id="value-grid">
+            <p class="coming-soon">Loading value cards...</p>
+        </div>
+    </section>
 
     <section id="inventory" class="inventory">
-        <h2>Our Inventory</h2>
-        <p class="section-subtitle">Browse our current selection of premium sports cards</p>
-        
+        <p class="eyebrow">Full catalog</p>
+        <h2>Inventory</h2>
+        <p class="section-subtitle">Search, filter by player or team, and check out when you are ready. <span id="catalog-count" class="catalog-count"></span></p>
+        <div class="chips" id="browse-chips" hidden></div>
         <div class="inventory-controls">
-            <input type="text" id="search-input" class="search-input" placeholder="🔍 Search cards...">
+            <input type="text" id="search-input" class="search-input" placeholder="Search player, set, team, or year" autocomplete="off">
             <select id="sort-select" class="sort-select">
-                <option value="name">Sort: A-Z</option>
-                <option value="name-desc">Sort: Z-A</option>
-                <option value="price">Sort: Price: Low to High</option>
-                <option value="price-desc">Sort: Price: High to Low</option>
+                <option value="newest" selected>Newest</option>
+                <option value="name">Name, A-Z</option>
+                <option value="name-desc">Name, Z-A</option>
+                <option value="price">Price, low to high</option>
+                <option value="price-desc">Price, high to low</option>
             </select>
             <div class="pagination">
-                <button id="prev-page" class="page-btn">← Previous</button>
+                <button id="prev-page" class="page-btn" type="button">Previous</button>
                 <span id="page-info">Page 1</span>
-                <button id="next-page" class="page-btn">Next →</button>
+                <button id="next-page" class="page-btn" type="button">Next</button>
             </div>
         </div>
-        
         <div class="inventory-grid" id="inventory-grid">
             <div class="card-placeholder">
                 <div class="card-image"></div>
-                <p class="coming-soon">Inventory loading...</p>
+                <p class="coming-soon">Loading inventory...</p>
             </div>
         </div>
-        
-        <p class="inventory-note">Don't see what you're looking for? Contact us — we can source specific cards.</p>
+        <p class="inventory-note">Looking for a specific card? <a href="#contact">Send a note</a> — we source.</p>
     </section>
 
     <section id="about" class="about">
-        <h2>About Aventus Elite Cards</h2>
-        <p>We specialize in sourcing and selling sports cards. Whether you're a collector or investor, we help you find the right cards for your collection.</p>
-        
+        <p class="eyebrow">The shop</p>
+        <h2>About</h2>
+        <p>Aventus is a collector-run shop. We buy cards we would hold ourselves: honest centering, clean surfaces, and prices that make sense on both sides of the deal. What you see on this page is live inventory, not a stock-photo catalog.</p>
         <div class="features">
             <div class="feature">
-                <h3>🎯 Authenticity Guaranteed</h3>
-                <p>We offer graded cards from PSA, BGS, CGC and raw cards. All graded cards come with authentication.</p>
+                <h3>Graded and raw</h3>
+                <p>PSA, BGS, and CGC slabs alongside carefully described raw singles. Authentication stays with the grader; condition notes stay with us.</p>
             </div>
             <div class="feature">
-                <h3>📦 Secure Shipping</h3>
-                <p>Every card ships in protective packaging. Insurance available upon request.</p>
+                <h3>Packed to arrive</h3>
+                <p>Toploaders, team bags, and rigid mailers. Insurance is available on request. We ship the way we would want a package to show up.</p>
             </div>
             <div class="feature">
-                <h3>🤝 Trusted Service</h3>
-                <p>Building relationships with collectors and investors since 2026.</p>
+                <h3>Direct</h3>
+                <p>Questions go to the person who listed the card. If a player is not up, ask — we source lots and singles.</p>
             </div>
         </div>
     </section>
 
     <section id="contact" class="contact">
-        <h2>Contact Us</h2>
-        <p>Interested in any of our cards? Want to sell your collection? Let's talk.</p>
-        
+        <p class="eyebrow">Inquiries</p>
+        <h2>Contact</h2>
+        <p>Selling a collection, hunting a specific card, or asking about something listed — write us. We read everything.</p>
         <form class="contact-form" id="contact-form">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="email" name="email" placeholder="Email" required>
             <input type="text" name="subject" placeholder="Subject" required>
-            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
-            <button type="submit" class="submit-button">Send Message</button>
+            <textarea name="message" placeholder="Message" rows="5" required></textarea>
+            <button type="submit" class="submit-button">Send message</button>
         </form>
-        
         <div class="contact-info">
-            <p>Or email us directly: <strong>Justin@aventuselitecards.com</strong></p>
+            <p>Or email <a href="mailto:Justin@aventuselitecards.com">Justin@aventuselitecards.com</a></p>
         </div>
     </section>
 
     <footer>
-        <p style="margin-bottom:10px;">Find us on eBay, Shopify, CollX & Instagram!</p>
+        <p class="footer-brand">Aventus Elite Cards</p>
         <div class="social-links">
-            <a href="https://ebay.com/usr/aventuselitecards" class="social-icon" title="eBay">🛒</a>
-            <a href="https://aventus-elite-cards.myshopify.com" class="social-icon" title="Shopify">🛍️</a>
-            <a href="https://collx.com/aventuselitecards" class="social-icon" title="CollX">🎯</a>
-            <a href="https://instagram.com/aventuselitecards" class="social-icon" title="Instagram">📷</a>
-            <a href="https://tiktok.com/@aventuselitecards" class="social-icon" title="TikTok">🎵</a>
+            <a href="https://ebay.com/usr/aventuselitecards">eBay</a>
+            <a href="https://aventus-elite-cards.myshopify.com">Shopify</a>
+            <a href="https://collx.com/aventuselitecards">CollX</a>
+            <a href="https://instagram.com/aventuselitecards">Instagram</a>
+            <a href="https://tiktok.com/@aventuselitecards">TikTok</a>
         </div>
-        <p>&copy; 2026 Aventus Elite Cards. All rights reserved.</p>
-        <p class="footer-note">Premium Sports Cards | Buy, Sell, Trade</p>
+        <p>&copy; 2026 Aventus Elite Cards</p>
     </footer>
-
-    <script>
-    // Variables for pagination and search
-    var allProducts = [];
-    var filteredProducts = [];
-    var productsPerPage = 50;
-    var currentPage = 1;
-    
-    // Fetch from Netlify function (with cache bust)
-    fetch('/.netlify/functions/shopify?t=' + Date.now())
-    .then(function(response) { 
-        console.log('Response status:', response.status);
-        return response.json(); 
-    })
-    .then(function(data) {
-        allProducts = data.products || [];
-        filteredProducts = allProducts;
-        console.log('Loaded', allProducts.length, 'products');
-        displayProducts(currentPage);
-    })
-    .catch(function(err) {
-        console.error('Error:', err);
-    });
-    
-    // Connect the search box in HTML to the search function
-    document.getElementById('search-input').addEventListener('input', function(e) {
-        searchProducts(e.target.value);
-    });
-    
-    // Connect sort dropdown
-    document.getElementById('sort-select').addEventListener('change', function(e) {
-        sortProducts(e.target.value);
-    });
-    
-    // Connect pagination buttons
-    document.getElementById('prev-page').addEventListener('click', function() {
-        if (currentPage > 1) {
-            currentPage--;
-            displayProducts(currentPage);
-        }
-    });
-    
-    document.getElementById('next-page').addEventListener('click', function() {
-        var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            displayProducts(currentPage);
-        }
-    });
-    
-    function sortProducts(sortType) {
-        if (sortType === 'name') {
-            filteredProducts.sort(function(a, b) { return a.title.localeCompare(b.title); });
-        } else if (sortType === 'name-desc') {
-            filteredProducts.sort(function(a, b) { return b.title.localeCompare(a.title); });
-        } else if (sortType === 'price') {
-            filteredProducts.sort(function(a, b) { return parseFloat(a.variants[0].price) - parseFloat(b.variants[0].price); });
-        } else if (sortType === 'price-desc') {
-            filteredProducts.sort(function(a, b) { return parseFloat(b.variants[0].price) - parseFloat(a.variants[0].price); });
-        }
-        currentPage = 1;
-        displayProducts(currentPage);
-    }
-    
-    function searchProducts(query) {
-        query = query.toLowerCase();
-        if (!query) {
-            filteredProducts = allProducts;
-        } else {
-            filteredProducts = allProducts.filter(function(p) {
-                return p.title.toLowerCase().includes(query);
-            });
-        }
-        currentPage = 1;
-        displayProducts(currentPage);
-    }
-    
-    function displayProducts(page) {
-        var grid = document.getElementById('inventory-grid');
-        if (!grid || filteredProducts.length === 0) {
-            if (grid) grid.innerHTML = '<p>No products found.</p>';
-            return;
-        }
-        
-        var start = (page - 1) * productsPerPage;
-        var end = start + productsPerPage;
-        var pageProducts = filteredProducts.slice(start, end);
-        var totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-        
-        var html = '';
-        
-        // Products (use existing search box and buttons from HTML)
-        html += pageProducts.map(function(p) {
-            var imgUrl = p.images && p.images[0] ? p.images[0].src : '';
-            var name = p.title || 'Unknown';
-            var price = p.variants && p.variants[0] ? p.variants[0].price : '0';
-            var link = 'https://aventus-elite-cards.myshopify.com/products/' + p.handle;
-            return '<a href="' + link + '" target="_blank" style="display:block;margin:10px 0;padding:10px;border:1px solid #ccc;text-decoration:none;color:#333;">' +
-                '<img src="' + imgUrl + '" alt="' + name + '" style="width:80px;vertical-align:middle;margin-right:10px;"> ' + name + ' - $' + price +
-                '</a>';
-        }).join('');
-        
-        grid.innerHTML = html;
-        
-        // Update page info display
-        document.getElementById('page-info').textContent = 'Page ' + page + ' of ' + totalPages;
-    }
-    </script>
+    <script src="script.js"></script>
 </body>
-</html><!-- force deploy Sat Apr  4 23:25:50 UTC 2026 -->
+</html>
