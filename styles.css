@@ -288,6 +288,14 @@ nav {
     padding: 0.7rem;
     transition: transform 0.35s ease;
 }
+.card-image.is-placeholder::after {
+    content: "Aventus";
+    font-family: var(--font-display);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(201, 162, 39, 0.38);
+    font-size: 0.82rem;
+}
 .card-item:hover .card-image img { transform: scale(1.04); }
 .card-info {
     padding: 1rem 1rem 1.15rem;
