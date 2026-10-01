@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card · Aventus Elite Cards</title>
+    <meta name="description" content="Card details, photos, condition, and price at Aventus Elite Cards.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/logo.png">
+</head>
+<body class="card-page">
+    <header>
+        <nav>
+            <a class="logo" href="index.html"><img src="images/logo.png" alt="Aventus Elite Cards"></a>
+            <ul class="nav-links">
+                <li><a href="index.html#featured">Featured</a></li>
+                <li><a href="index.html#inventory">Inventory</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="https://www.ebay.com/usr/aventuselitecards" target="_blank" rel="noopener">eBay</a></li>
+            </ul>
+            <button type="button" class="cart-button" data-cart-toggle aria-controls="cart-drawer">
+                Cart <span class="cart-count" data-cart-count hidden>0</span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="card-detail" id="card-detail">
+        <a class="back-link" href="index.html#inventory">&larr; Back to inventory</a>
+        <div class="detail-status" id="detail-status">Loading card...</div>
+        <div class="detail-layout" id="detail-layout" hidden>
+            <div class="detail-gallery">
+                <div class="detail-main-image card-image" id="detail-main-image"></div>
+                <div class="detail-thumbs" id="detail-thumbs"></div>
+            </div>
+            <div class="detail-info">
+                <p class="eyebrow" id="detail-set"></p>
+                <h1 id="detail-title"></h1>
+                <div class="detail-tags" id="detail-tags"></div>
+                <p class="detail-price card-price" id="detail-price"></p>
+                <div class="detail-actions" id="detail-actions"></div>
+                <dl class="detail-facts" id="detail-facts"></dl>
+                <div class="detail-description" id="detail-description"></div>
+            </div>
+        </div>
+        <section class="detail-copies" id="detail-copies" hidden>
+            <p class="eyebrow">Same card</p>
+            <h2>Other copies in stock</h2>
+            <div class="inventory-grid rail-grid" id="detail-copies-grid"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p class="footer-brand">Aventus Elite Cards</p>
+        <div class="social-links">
+            <a href="https://www.ebay.com/usr/aventuselitecards" target="_blank" rel="noopener">eBay</a>
+            <a href="index.html">Shop</a>
+            <a href="mailto:Justin@aventuselitecards.com">Email</a>
+        </div>
+        <p>&copy; 2026 Aventus Elite Cards</p>
+    </footer>
+    <script src="catalog.js"></script>
+    <script src="cart.js"></script>
+    <script src="card.js"></script>
+</body>
+</html>

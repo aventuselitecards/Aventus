@@ -22,6 +22,9 @@
                 <li><a href="#contact">Contact</a></li>
                 <li><a href="https://www.ebay.com/usr/aventuselitecards" target="_blank" rel="noopener">eBay</a></li>
             </ul>
+            <button type="button" class="cart-button" data-cart-toggle aria-controls="cart-drawer">
+                Cart <span class="cart-count" data-cart-count hidden>0</span>
+            </button>
         </nav>
     </header>
 
@@ -78,7 +81,7 @@
     <section id="inventory" class="inventory">
         <p class="eyebrow">Full catalog</p>
         <h2>Inventory</h2>
-        <p class="section-subtitle">Search, filter by player or team, and check out when you are ready. <span id="catalog-count" class="catalog-count"></span></p>
+        <p class="section-subtitle">Search, filter by player or team, tap a card for photos and details, and check out when you are ready. <span id="catalog-count" class="catalog-count"></span></p>
         <div class="chips" id="browse-chips" hidden></div>
         <div class="inventory-controls">
             <input type="text" id="search-input" class="search-input" placeholder="Search player, set, team, or year" autocomplete="off">
@@ -149,6 +152,8 @@
         </div>
         <p>&copy; 2026 Aventus Elite Cards</p>
     </footer>
+    <script src="catalog.js"></script>
+    <script src="cart.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
