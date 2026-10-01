@@ -15,7 +15,10 @@
     <header>
         <nav>
             <a class="logo" href="index.html"><img src="images/logo.png" alt="Aventus Elite Cards"></a>
-            <ul class="nav-links">
+            <button type="button" class="menu-toggle" aria-controls="nav-links" aria-expanded="false" aria-label="Open menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
                 <li><a href="index.html#featured">Featured</a></li>
                 <li><a href="index.html#inventory">Inventory</a></li>
                 <li><a href="index.html#about">About</a></li>
@@ -55,15 +58,29 @@
 
     <footer>
         <p class="footer-brand">Aventus Elite Cards</p>
-        <div class="social-links">
-            <a href="https://www.ebay.com/usr/aventuselitecards" target="_blank" rel="noopener">eBay</a>
-            <a href="index.html">Shop</a>
-            <a href="mailto:Justin@aventuselitecards.com">Email</a>
+        <div class="footer-cols">
+            <div class="footer-col">
+                <p class="footer-heading">Shop</p>
+                <a href="index.html#inventory">Inventory</a>
+                <a href="https://www.ebay.com/usr/aventuselitecards" target="_blank" rel="noopener">eBay</a>
+                <a href="https://share.collx.app/Aventus/profile" target="_blank" rel="noopener">CollX @Aventus</a>
+            </div>
+            <div class="footer-col">
+                <p class="footer-heading">Policies</p>
+                <a href="https://aventus-elite-cards.myshopify.com/policies/privacy-policy" target="_blank" rel="noopener">Privacy policy</a>
+                <a href="https://aventus-elite-cards.myshopify.com/pages/contact" target="_blank" rel="noopener">Shopify contact</a>
+            </div>
+            <div class="footer-col">
+                <p class="footer-heading">Follow</p>
+                <a href="https://www.tiktok.com/@aventuselitecards" target="_blank" rel="noopener">TikTok</a>
+                <a href="mailto:Justin@aventuselitecards.com">Email</a>
+            </div>
         </div>
         <p>&copy; 2026 Aventus Elite Cards</p>
     </footer>
     <script src="catalog.js"></script>
     <script src="cart.js"></script>
+    <script src="menu.js"></script>
     <script src="card.js"></script>
 </body>
 </html>
