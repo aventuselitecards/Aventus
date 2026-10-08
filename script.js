@@ -4,7 +4,6 @@
     var productsPerPage = 24;
     var currentPage = 1;
     var activeChip = "all";
-    var SHOP_CHECKOUT = "https://aventus-elite-cards.myshopify.com";
 
     var SPORTS = [
         { label: "Baseball", needles: ["baseball", "mlb"] },
@@ -37,64 +36,75 @@
         aventus: 1, elite: 1, shop: 1, new: 1, sale: 1, set: 1, base: 1
     };
 
-    function productPrice(p) {
-        var variant = p && p.variants && p.variants[0];
-        var n = variant ? parseFloat(variant.price) : NaN;
-        return isNaN(n) ? 0 : n;
+    var Cat = window.AventusCatalog;
+    var Cart = window.AventusCart;
+    var tileButtons = [];
+
+    // Each entry in allProducts is a group: one card title with one or more in-stock copies.
+    function productPrice(g) {
+        return g ? g.minPrice : 0;
     }
-    function productDate(p) {
-        return Date.parse((p && (p.published_at || p.created_at)) || 0) || 0;
+    function productDate(g) {
+        return g ? g.newest : 0;
     }
-    function isAvailable(p) {
-        var variant = p && p.variants && p.variants[0];
-        if (!variant) return false;
-        return variant.available !== false;
+    function isAvailable(g) {
+        return Boolean(g && g.copies && g.copies.length);
     }
-    function imageUrl(p) {
-        var src = (p.images && p.images[0] && p.images[0].src) || (p.image && p.image.src) || "";
-        if (src.indexOf("cdn.shopify.com") !== -1) {
-            src += (src.indexOf("?") === -1 ? "?" : "&") + "width=700";
+    function imageUrl(g) {
+        var p = g && g.primary;
+        return p ? Cat.imageUrl(p.images[0], 700) : "";
+    }
+    function hasImage(g) {
+        return Boolean(imageUrl(g));
+    }
+    function haystack(g) {
+        var p = g.primary;
+        return ((p.title || "") + " " + (p.vendor || "") + " " + (p.product_type || "") + " " +
+            (p.tags || []).join(" ") + " " + (p.handle || "") + " " + Cat.conditionLabel(p)).toLowerCase();
+    }
+    function tagsOf(g) {
+        return (g.primary && g.primary.tags) || [];
+    }
+    // First copy of this card that is not already in the cart.
+    function nextCopy(g) {
+        for (var i = 0; i < g.copies.length; i++) {
+            if (!Cart.has(g.copies[i].variant_id)) return g.copies[i];
         }
-        return src;
+        return null;
     }
-    function hasImage(p) {
-        return Boolean(imageUrl(p));
+    function updateTileButton(btn, g) {
+        var copy = nextCopy(g);
+        btn.classList.toggle("is-in-cart", !copy);
+        btn.textContent = copy ? "Add to cart" : "In cart";
     }
-    function haystack(p) {
-        return ((p.title || "") + " " + (p.vendor || "") + " " + (p.product_type || "") + " " + (p.tags || "") + " " + (p.handle || "")).toLowerCase();
-    }
-    function tagsOf(p) {
-        if (Array.isArray(p.tags)) return p.tags;
-        return String(p.tags || "").split(",").map(function (t) { return t.trim(); }).filter(Boolean);
+    function refreshTileButtons() {
+        tileButtons.forEach(function (t) { updateTileButton(t.btn, t.group); });
     }
 
-    function renderCard(p, opts) {
+    function renderCard(g, opts) {
         opts = opts || {};
+        var p = g.primary;
         var name = p.title || "Untitled card";
-        var variant = (p.variants && p.variants[0]) || {};
-        var vendor = p.vendor && p.vendor !== "Aventus Elite Cards" ? p.vendor : (p.product_type || "");
-        var available = isAvailable(p);
-        var variantId = variant.id;
-        var checkoutUrl = variantId ? (SHOP_CHECKOUT + "/cart/" + variantId + ":1") : "";
-        var imgSrc = imageUrl(p);
+        // Set name from CDP tags (e.g. "2025 Topps Chrome"); "CDP" is the lister, not useful to buyers.
+        var setTag = (p.tags || []).filter(function (t) { return /^\d{4}(-\d{2})?\s+\S/.test(t); })[0];
+        var vendor = setTag || (p.vendor && p.vendor !== "Aventus Elite Cards" && p.vendor !== "CDP" ? p.vendor : "");
+        var imgSrc = imageUrl(g);
+        var href = Cart.cardUrl(p.handle);
 
         var article = document.createElement("article");
-        article.className = "card-item" + (available ? "" : " is-sold");
+        article.className = "card-item";
 
         if (opts.badge) {
             var feat = document.createElement("span");
             feat.className = "badge";
             feat.textContent = opts.badge;
             article.appendChild(feat);
-        } else if (!available) {
-            var soldBadge = document.createElement("span");
-            soldBadge.className = "badge sold";
-            soldBadge.textContent = "Sold";
-            article.appendChild(soldBadge);
         }
 
-        var imageWrap = document.createElement("div");
+        var imageWrap = document.createElement("a");
         imageWrap.className = "card-image";
+        imageWrap.href = href;
+        imageWrap.setAttribute("aria-label", name);
         if (imgSrc) {
             var img = document.createElement("img");
             img.src = imgSrc;
@@ -113,8 +123,13 @@
         var info = document.createElement("div");
         info.className = "card-info";
         var title = document.createElement("h3");
-        title.textContent = name;
+        var titleLink = document.createElement("a");
+        titleLink.href = href;
+        titleLink.textContent = name;
+        title.appendChild(titleLink);
         info.appendChild(title);
+        var cond = Cat.conditionTag(p);
+        if (cond) info.appendChild(cond);
         if (vendor) {
             var team = document.createElement("p");
             team.className = "card-team";
@@ -123,21 +138,26 @@
         }
         var price = document.createElement("p");
         price.className = "card-price";
-        price.textContent = "$" + productPrice(p).toFixed(2);
+        price.textContent = (g.copies.length > 1 && g.maxPrice !== g.minPrice ? "From " : "") + Cart.money(g.minPrice);
         info.appendChild(price);
-        if (checkoutUrl && available) {
-            var buy = document.createElement("a");
-            buy.className = "shopify-button";
-            buy.href = checkoutUrl;
-            buy.rel = "noopener noreferrer";
-            buy.textContent = "Buy";
-            info.appendChild(buy);
-        } else {
-            var sold = document.createElement("span");
-            sold.className = "sold-out";
-            sold.textContent = "Sold";
-            info.appendChild(sold);
+        if (g.copies.length > 1) {
+            var copies = document.createElement("a");
+            copies.className = "card-copies";
+            copies.href = href;
+            copies.textContent = g.copies.length + " copies available";
+            info.appendChild(copies);
         }
+        var add = document.createElement("button");
+        add.type = "button";
+        add.className = "shopify-button";
+        add.addEventListener("click", function () {
+            var copy = nextCopy(g);
+            if (copy) Cart.add(copy);
+            else Cart.open();
+        });
+        updateTileButton(add, g);
+        tileButtons.push({ btn: add, group: g });
+        info.appendChild(add);
         article.appendChild(info);
         return article;
     }
@@ -145,6 +165,7 @@
     function fillGrid(el, products, emptyText, cardOpts) {
         if (!el) return;
         el.innerHTML = "";
+        tileButtons = tileButtons.filter(function (t) { return !el.contains(t.btn) && document.body.contains(t.btn); });
         if (!products.length) {
             var empty = document.createElement("p");
             empty.className = "coming-soon";
@@ -191,7 +212,7 @@
                 if (/^\d+$/.test(nice)) return;
                 add(nice, 2);
             });
-            add(guessPlayer(p.title), 2);
+            add(guessPlayer(p.primary.title), 2);
         });
         return Object.keys(counts)
             .filter(function (k) { return counts[k] >= 2 && k.toLowerCase() !== "all"; })
@@ -222,9 +243,9 @@
 
     function sortProducts(sortType, skipRender) {
         if (sortType === "name") {
-            filteredProducts.sort(function (a, b) { return (a.title || "").localeCompare(b.title || ""); });
+            filteredProducts.sort(function (a, b) { return (a.primary.title || "").localeCompare(b.primary.title || ""); });
         } else if (sortType === "name-desc") {
-            filteredProducts.sort(function (a, b) { return (b.title || "").localeCompare(a.title || ""); });
+            filteredProducts.sort(function (a, b) { return (b.primary.title || "").localeCompare(a.primary.title || ""); });
         } else if (sortType === "price") {
             filteredProducts.sort(function (a, b) { return productPrice(a) - productPrice(b); });
         } else if (sortType === "price-desc") {
@@ -249,7 +270,7 @@
         currentPage = page;
         var start = (page - 1) * productsPerPage;
         fillGrid(grid, filteredProducts.slice(start, start + productsPerPage), "No cards match that filter.");
-        if (pageInfo) pageInfo.textContent = "Page " + page + " of " + totalPages + " \u00b7 " + filteredProducts.length + " cards";
+        if (pageInfo) pageInfo.textContent = "Page " + page + " of " + totalPages + " \u00b7 " + filteredProducts.length.toLocaleString() + " cards";
         if (prevBtn) prevBtn.disabled = page <= 1;
         if (nextBtn) nextBtn.disabled = page >= totalPages;
         if (page !== 1) {
@@ -293,17 +314,17 @@
         fillGrid(document.getElementById("value-grid"), value, "No cards under $5 in stock right now.");
     }
 
-    fetch("/.netlify/functions/shopify?t=" + Date.now())
-        .then(function (response) {
-            if (!response.ok) throw new Error("Inventory request failed");
-            return response.json();
-        })
+    Cat.fetchLive()
         .then(function (data) {
-            allProducts = data.products || [];
+            var listings = data.products || [];
+            Cart.sync(listings);
+            allProducts = Cat.groupProducts(listings);
             filteredProducts = allProducts.slice();
             var countEl = document.getElementById("catalog-count");
             if (countEl) {
-                countEl.textContent = allProducts.length + " published cards in the shop.";
+                var copies = listings.length - allProducts.length;
+                countEl.textContent = allProducts.length.toLocaleString() + " cards in stock" +
+                    (copies > 0 ? " \u00b7 " + listings.length.toLocaleString() + " listings incl. extra copies" : "") + ".";
             }
             renderRails();
             renderChips(buildChips(allProducts));
@@ -315,6 +336,8 @@
                 fillGrid(document.getElementById(id), [], "Inventory is temporarily unavailable. Try again in a moment.");
             });
         });
+
+    Cart.onChange(refreshTileButtons);
 
     document.getElementById("search-input").addEventListener("input", function () {
         currentPage = 1;
