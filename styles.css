@@ -670,3 +670,68 @@ body.cart-open { overflow: hidden; }
     .detail-layout { grid-template-columns: 1fr; gap: 1.5rem; }
     .cart-button { padding: 0.4rem 0.6rem; font-size: 0.66rem; letter-spacing: 0.08em; }
 }
+
+/* ---- Footer columns ---- */
+.footer-cols {
+    max-width: 760px;
+    margin: 0 auto 1.6rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+}
+.footer-col { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
+.footer-heading {
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.2rem;
+}
+.footer-col a {
+    color: var(--cream-dim);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.footer-col a:hover { color: var(--gold); }
+
+/* ---- Mobile menu ---- */
+.menu-toggle {
+    display: none;
+    width: 40px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+}
+.menu-toggle span { display: block; width: 18px; height: 1.5px; background: var(--cream); transition: transform 0.2s ease, opacity 0.2s ease; }
+body.menu-open .menu-toggle span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+body.menu-open .menu-toggle span:nth-child(2) { opacity: 0; }
+body.menu-open .menu-toggle span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+@media (max-width: 800px) {
+    nav { gap: 0.75rem; }
+    .menu-toggle { display: inline-flex; order: 3; margin-left: 0; }
+    .cart-button { order: 2; margin-left: auto; }
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: rgba(7, 9, 15, 0.98);
+        border-bottom: 1px solid var(--line);
+        padding: 0.4rem 0 0.8rem;
+    }
+    body.menu-open .nav-links { display: flex; }
+    .nav-links li { border-top: 1px solid rgba(201, 162, 39, 0.1); }
+    .nav-links a { display: block; padding: 0.85rem 1.25rem; font-size: 0.82rem; letter-spacing: 0.14em; }
+    .footer-cols { grid-template-columns: 1fr; gap: 1.4rem; }
+}
